@@ -149,10 +149,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="MediaFoundationLib.cpp" />
-    <ClCompile Include="WxWidgetsTest.cpp" />
+    <ClCompile Include="..\C++Gui\MediaFoundationLib.cpp" />
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="MainFrame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App.h" />
+    <ClInclude Include="MainFrame.h" />
     <ClInclude Include="MediaFoundationLib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
