@@ -1,13 +1,15 @@
 #pragma once
-#include <wx/wxprec.h>
 #include "MediaFoundationLib.h"
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-class MainFrame : public wxFrame
+class MainFrame :public wxFrame
 {
+	int selectedDevice;
+	MediaFoundationLib* mfObject;
 public:
-    MainFrame();
-    ~MainFrame();
-private:
+	VOID OnDeviceSelected(int index);
+	MainFrame(const wxString& title, const wxSize& size);
 };
+

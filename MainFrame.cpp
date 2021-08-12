@@ -1,11 +1,15 @@
 #include "MainFrame.h"
 
-MainFrame::MainFrame()
-    : wxFrame(NULL, wxID_ANY, "Hello World")
+MainFrame::MainFrame(const wxString& title, const wxSize& size)
+	:wxFrame(NULL, wxID_ANY, title)
 {
-    this->SetClientSize(740, 580);
+	mfObject = new MediaFoundationLib();
+	mfObject->GetVideoDevices();
+	SetSize(size);
+	SetBackgroundColour(wxColour(0xFFFFFFFFul));
 }
 
-MainFrame::~MainFrame()
+VOID MainFrame::OnDeviceSelected(int index)
 {
+	selectedDevice = index;
 }

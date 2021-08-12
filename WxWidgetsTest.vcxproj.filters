@@ -21,18 +21,18 @@
     <ClCompile Include="MainFrame.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\C++Gui\MediaFoundationLib.cpp">
+    <ClCompile Include="MediaFoundationLib.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MediaFoundationLib.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="App.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="MainFrame.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaFoundationLib.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
