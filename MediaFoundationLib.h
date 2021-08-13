@@ -13,9 +13,8 @@ public:
 	MediaFoundationLib();
 	VOID RepaintVideo();
 	VOID Dispose();
-	HRESULT InitMFPreview(HWND* hWnd, IMFActivate* videoSource);
-	UINT GetVideoDeviceCount();
-	WCHAR* GetDeviceNames(int index);
+	VOID SetSelectedDeviceIndex(int index);
+	HRESULT InitMFPreview(HWND* hWnd);
 	HRESULT GetVideoDevices();
 	std::vector<LPWSTR> GetDeviceNames();
 private:
@@ -29,7 +28,8 @@ private:
 	IMFTopologyNode* pMFTopologySource;
 	IMFTopologyNode* pMFTopologyOutput;
 	IMFActivate* pMFActivateEVR;
-	IMFActivate** devices;
+	IMFActivate* pMFDeviceSource;
+	IMFActivate** pMFVideoDevicesArray;
 	std::vector<LPWSTR> deviceNames;
 	UINT32 videoDevicesCount;
 

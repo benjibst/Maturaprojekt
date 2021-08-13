@@ -12,7 +12,8 @@ MediaFoundationLib::MediaFoundationLib()
 	pMFActivateEVR = NULL;
 	pMFGetService = NULL;
 	pMFVideoDisplayControl = NULL;
-	devices = NULL;
+	pMFDeviceSource = NULL;
+	pMFVideoDevicesArray = NULL;
 	videoDevicesCount = 0;
 }
 
@@ -24,7 +25,7 @@ VOID MediaFoundationLib::RepaintVideo()
 
 HRESULT MediaFoundationLib::GetVideoDevices()
 {
-	devices = NULL;
+	pMFVideoDevicesArray = NULL;
 	IMFAttributes* pAttributes = NULL;
 	// Create an attribute store to specify the enumeration parameters.
 	HRESULT hr = MFCreateAttributes(&pAttributes, 1);
@@ -41,14 +42,14 @@ HRESULT MediaFoundationLib::GetVideoDevices()
 
 	// Enumerate devices.
 
-	hr = MFEnumDeviceSources(pAttributes, &devices, &videoDevicesCount);
+	hr = MFEnumDeviceSources(pAttributes, &pMFVideoDevicesArray, &videoDevicesCount);
 	if (FAILED(hr))
 		return hr;
 	UINT32 nameLength = 0;
 	LPWSTR deviceName;
 	for (UINT32 i = 0; i < videoDevicesCount; i++)
 	{
-		hr = devices[i]->GetAllocatedString(
+		hr = pMFVideoDevicesArray[i]->GetAllocatedString(
 			MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
 			&deviceName, &nameLength);
 		if (SUCCEEDED(hr))
@@ -199,7 +200,7 @@ done:
 
 
 
-HRESULT MediaFoundationLib::InitMFPreview(HWND* hWnd, IMFActivate* videoSource)
+HRESULT MediaFoundationLib::InitMFPreview(HWND* hWnd)
 {
 	HRESULT hr;
 	pMFMediaSource = NULL;
@@ -213,7 +214,7 @@ HRESULT MediaFoundationLib::InitMFPreview(HWND* hWnd, IMFActivate* videoSource)
 	pMFGetService = NULL;
 	pMFVideoDisplayControl = NULL;
 
-	hr = CreateVideoDeviceSource(&pMFMediaSource, videoSource);
+	hr = CreateVideoDeviceSource(&pMFMediaSource, pMFDeviceSource);
 	if (FAILED(hr))
 		return hr;
 
@@ -293,23 +294,6 @@ HRESULT MediaFoundationLib::InitMFPreview(HWND* hWnd, IMFActivate* videoSource)
 	return S_OK;
 }
 
-UINT MediaFoundationLib::GetVideoDeviceCount()
-{
-	return videoDevicesCount;
-}
-
-LPWSTR MediaFoundationLib::GetDeviceNames(int index)
-{
-	try
-	{
-		return deviceNames[index];
-	}
-	catch (const std::exception&)
-	{
-		return nullptr;
-	}
-
-}
 
 VOID MediaFoundationLib::Dispose()
 {
@@ -329,6 +313,11 @@ VOID MediaFoundationLib::Dispose()
 	SafeRelease(&pMFTopologySource);
 	SafeRelease(&pMFTopologyOutput);
 	SafeRelease(&pMFActivateEVR);
+}
+
+VOID MediaFoundationLib::SetSelectedDeviceIndex(int index)
+{
+	pMFDeviceSource = pMFVideoDevicesArray[index];
 }
 
 template <class T> VOID MediaFoundationLib::SafeRelease(T** ppT)
