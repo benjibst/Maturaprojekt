@@ -302,7 +302,7 @@ VOID MediaFoundationLib::Dispose()
 		pMFMediaSession->Stop();
 		pMFMediaSession->ClearTopologies();
 	}
-
+	deviceNames.clear();
 	SafeRelease(&pMFMediaSource);
 	SafeRelease(&pMFPresentationDescriptor);
 	SafeRelease(&pMFStreamDescriptor);

@@ -29,3 +29,9 @@ MainFrame::MainFrame(const wxString& title, const wxSize& size)
 	}
 
 }
+
+MainFrame::~MainFrame()
+{
+	mfObject->Dispose();
+	delete mfObject;
+}

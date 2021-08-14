@@ -15,5 +15,6 @@ class MainFrame :public wxFrame
 	wxPanel* basePanel;
 public:
 	MainFrame(const wxString& title, const wxSize& size);
+	~MainFrame();
 };
 
