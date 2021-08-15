@@ -13,6 +13,8 @@ class MainFrame :public wxFrame
 	MediaFoundationLib* mfObject;
 	wxPanel* mfStreamContainer;
 	wxPanel* basePanel;
+	void btnCaptureClicked(wxCommandEvent& event);
+	DIBIMAGE CapturedImage{};
 public:
 	MainFrame(const wxString& title, const wxSize& size);
 	~MainFrame();

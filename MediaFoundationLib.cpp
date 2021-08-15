@@ -63,6 +63,19 @@ std::vector<LPWSTR> MediaFoundationLib::GetDeviceNames()
 	return deviceNames;
 }
 
+HRESULT MediaFoundationLib::captureImage(DIBIMAGE* Image)
+{
+	MFVideoNormalizedRect sourcerect{};
+	RECT destrect{};
+	HRESULT hr = pMFVideoDisplayControl->GetVideoPosition(&sourcerect, &destrect);
+	if (FAILED(hr))
+		return hr;
+	Image->info.biSize = sizeof(BITMAPINFOHEADER);
+	BYTE* pImageData = Image->imageData.data();
+	hr=pMFVideoDisplayControl->GetCurrentImage(&Image->info, &pImageData, &Image->bufferSize, &Image->timeStamp);
+	return hr;
+}
+
 HRESULT MediaFoundationLib::CreateVideoDeviceSource(IMFMediaSource** ppMFMS, IMFActivate* device)
 {
 	HRESULT hr;
@@ -259,27 +272,11 @@ HRESULT MediaFoundationLib::InitMFPreview(HWND* hWnd)
 	if (FAILED(hr))
 		return hr;
 
-	Sleep(500);
+	Sleep(1000);
 
 	hr = pMFGetService->GetService(MR_VIDEO_RENDER_SERVICE, IID_IMFVideoDisplayControl, (VOID**)&pMFVideoDisplayControl);
 	if (FAILED(hr))
 		return hr;
-
-	//SIZE szVideo = {};
-	//SIZE arVideo = {};
-	//hr = pMFVideoDisplayControl->GetNativeVideoSize(&szVideo, &arVideo);
-	//if (FAILED(hr))
-	//	return hr;
-
-	//RECT targetRect = {};
-	//targetRect.left = 50;
-	//targetRect.right = szVideo.cx + targetRect.left;
-	//targetRect.top = 50;
-	//targetRect.bottom = szVideo.cy + targetRect.top;
-
-	/*hr = pMFVideoDisplayControl->SetVideoPosition(NULL, &targetRect);
-	if (FAILED(hr))
-		return hr;*/
 
 	hr = pMFVideoDisplayControl->SetVideoWindow(*hWnd);
 	if (FAILED(hr))

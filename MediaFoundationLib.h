@@ -7,6 +7,14 @@
 #include <Windows.h>
 #include <vector>
 
+struct DIBIMAGE 
+{
+	BITMAPINFOHEADER info;
+	std::vector<BYTE> imageData;
+	DWORD bufferSize;
+	LONGLONG timeStamp;
+};
+
 class MediaFoundationLib
 {
 public:
@@ -17,6 +25,8 @@ public:
 	HRESULT InitMFPreview(HWND* hWnd);
 	HRESULT GetVideoDevices();
 	std::vector<LPWSTR> GetDeviceNames();
+	HRESULT captureImage(DIBIMAGE*);
+	DIBIMAGE lastImage;
 private:
 	IMFMediaSource* pMFMediaSource; 
 	IMFPresentationDescriptor* pMFPresentationDescriptor;
