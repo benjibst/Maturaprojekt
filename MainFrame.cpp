@@ -2,8 +2,9 @@
 
 void MainFrame::btnCaptureClicked(wxCommandEvent& event)
 {
+	CoTaskMemFree(CapturedImage.imageData.data());
 	mfObject->captureImage(&CapturedImage);
-	CapturedImage.imageData.clear();
+
 }
 
 MainFrame::MainFrame(const wxString& title, const wxSize& size)
