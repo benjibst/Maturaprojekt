@@ -10,9 +10,9 @@
 struct DIBIMAGE 
 {
 	BITMAPINFOHEADER info;
-	std::vector<BYTE> imageData;
-	DWORD bufferSize;
-	LONGLONG timeStamp;
+	unsigned char** imageData;
+	unsigned long bufferSize;
+	long long timeStamp;
 };
 
 class MediaFoundationLib

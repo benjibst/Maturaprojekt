@@ -2,9 +2,8 @@
 
 void MainFrame::btnCaptureClicked(wxCommandEvent& event)
 {
-	CoTaskMemFree(CapturedImage.imageData.data());
 	mfObject->captureImage(&CapturedImage);
-
+	Helpers::ByteArrayToFile(CapturedImage.imageData,CapturedImage.bufferSize);
 }
 
 MainFrame::MainFrame(const wxString& title, const wxSize& size)

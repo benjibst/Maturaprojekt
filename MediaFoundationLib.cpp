@@ -71,8 +71,8 @@ HRESULT MediaFoundationLib::captureImage(DIBIMAGE* Image)
 	if (FAILED(hr))
 		return hr;
 	Image->info.biSize = sizeof(BITMAPINFOHEADER);
-	BYTE* pImageData = Image->imageData.data();
-	hr=pMFVideoDisplayControl->GetCurrentImage(&Image->info, &pImageData, &Image->bufferSize, &Image->timeStamp);
+	Image->imageData = (unsigned char**)malloc(sizeof(unsigned char*)*1300000);
+	hr=pMFVideoDisplayControl->GetCurrentImage(&Image->info, Image->imageData, &Image->bufferSize, &Image->timeStamp);
 	return hr;
 }
 
