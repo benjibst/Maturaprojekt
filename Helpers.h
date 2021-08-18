@@ -7,6 +7,6 @@ class Helpers
 {
 public:
 	static void wxArrStrFromVector(wxArrayString* pArrStr, std::vector<wchar_t*>vector);
-	static void ByteArrayToFile(unsigned char** buffer, int buffersize);
+	static void ByteArrayToFile(unsigned char* buffer, int buffersize);
 };
 

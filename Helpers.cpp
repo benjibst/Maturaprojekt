@@ -10,7 +10,7 @@ void Helpers::wxArrStrFromVector(wxArrayString* arrstr, std::vector<wchar_t*> ve
 	}
 }
 
-void Helpers::ByteArrayToFile(unsigned char** buffer, int buffersize)
+void Helpers::ByteArrayToFile(unsigned char* buffer, int buffersize)
 {
 	std::ofstream imageFile;
 	imageFile.open("D:\\Programme\\Cpp_prog\\wxWidgetsMF\\Images\\image.txt", std::ios::out);
@@ -18,9 +18,12 @@ void Helpers::ByteArrayToFile(unsigned char** buffer, int buffersize)
 	for (int x = 0; x < buffersize; x++) 
 	{
 		count++;
-		imageFile << buffer[0][x] << " ";
-		if (count % 640 == 0)
+		imageFile << buffer[x] << " ";
+		if (count == 640)
+		{
 			imageFile << "\r\n";
+			count = 0;
+		}
 	}
 	imageFile.close();
 }

@@ -10,7 +10,7 @@
 struct DIBIMAGE 
 {
 	BITMAPINFOHEADER info;
-	unsigned char** imageData;
+	unsigned char* imageData;
 	unsigned long bufferSize;
 	long long timeStamp;
 };

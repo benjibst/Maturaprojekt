@@ -39,6 +39,8 @@ MainFrame::MainFrame(const wxString& title, const wxSize& size)
 
 MainFrame::~MainFrame()
 {
+	if (CapturedImage.imageData != NULL)
+		free(CapturedImage.imageData);
 	mfObject->Dispose();
 	delete mfObject;
 }
