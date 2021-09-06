@@ -21,9 +21,6 @@
     <ClCompile Include="MainFrame.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="MediaFoundationLib.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Helpers.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -33,9 +30,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="MainFrame.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="MediaFoundationLib.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Helpers.h">

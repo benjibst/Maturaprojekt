@@ -1,8 +1,11 @@
 #pragma once
 #include <wx/arrstr.h>
+#include "MediaFoundationLib.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
+
+
 class Helpers
 {
 public:

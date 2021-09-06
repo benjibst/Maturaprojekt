@@ -1,6 +1,7 @@
 #pragma once
 #include "MediaFoundationLib.h"
 #include "Helpers.h"
+#include "opencv2/imgproc/imgproc.hpp"
 #include <wx/choicdlg.h>
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
