@@ -1,15 +1,17 @@
 #pragma once
-#include <wx/arrstr.h>
-#include "MediaFoundationLib.h"
+#include <mfapi.h>
+#include <string>
+#include <mfidl.h>
+#include <Windows.h>
 #include <vector>
-#include <iostream>
-#include <fstream>
+#include <wx/arrstr.h>
 
 
 class Helpers
 {
 public:
-	static void wxArrStrFromVector(wxArrayString* pArrStr, std::vector<wchar_t*>vector);
-	static void ByteArrayToFile(unsigned char* buffer, int buffersize);
+	static wxArrayString wxArrStrFromVector(std::vector<std::wstring>vector);
+	static std::vector<std::wstring> getDeviceNames();
+	template <class T> static void SafeRelease(T** ppT);
 };
 

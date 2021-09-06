@@ -128,7 +128,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_x64_lib;$(OPENCV_DIR)\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;strmiids.lib;opencv_core453d.lib;opencv_imgproc453d.lib;opencv_videoio453d.lib</AdditionalDependencies>
+      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;opencv_core453d.lib;opencv_imgproc453d.lib;opencv_videoio453d.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,7 +149,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_x64_lib;$(OPENCV_DIR)\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;strmiids.lib;opencv_core453d.lib;opencv_imgproc453d.lib;opencv_videoio453d.lib</AdditionalDependencies>
+      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;opencv_core453d.lib;opencv_imgproc453d.lib;opencv_videoio453d.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -161,6 +161,9 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="MainFrame.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

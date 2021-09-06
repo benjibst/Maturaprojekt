@@ -1,29 +1,64 @@
 #include "Helpers.h"
 
-void Helpers::wxArrStrFromVector(wxArrayString* arrstr, std::vector<wchar_t*> vec)
+wxArrayString Helpers::wxArrStrFromVector(std::vector<std::wstring> vec)
 {
-	if (arrstr != nullptr && !vec.empty())
+	wxArrayString deviceDisplayNames;
+	if (!vec.empty())
 	{
-		arrstr->Clear();
 		for (int i = 0; i < vec.size(); i++)
-			arrstr->Add(vec[i]);
+			deviceDisplayNames.Add(vec[i]);
 	}
+	return deviceDisplayNames;
 }
 
-void Helpers::ByteArrayToFile(unsigned char* buffer, int buffersize)
+std::vector<std::wstring> Helpers::getDeviceNames()
 {
-	std::ofstream imageFile;
-	imageFile.open("D:\\Programme\\Cpp_prog\\wxWidgetsMF\\Images\\image.txt", std::ios::out);
-	int count = 0;
-	for (int x = 0; x < buffersize; x++)
+	std::vector<std::wstring> deviceNames;
+	HRESULT hr;
+	uint32_t videoDevicesCount;
+	uint32_t nameLength = 0;
+	wchar_t* deviceName;	
+	IMFActivate** pMFVideoDevicesArray = NULL;
+	IMFAttributes* pAttributes = NULL;
+	// Create an attribute store to specify the enumeration parameters.
+	hr = MFCreateAttributes(&pAttributes, 1);
+
+	// Source type: video capture devices
+	hr = pAttributes->SetGUID(
+		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
+		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
+	);
+
+	// Enumerate devices.
+
+	hr = MFEnumDeviceSources(pAttributes, &pMFVideoDevicesArray, &videoDevicesCount);
+	
+	for (UINT32 i = 0; i < videoDevicesCount; i++)
 	{
-		count++;
-		imageFile << buffer[x] << " ";
-		if (count == 640)
-		{
-			imageFile << "\r\n";
-			count = 0;
-		}
+		hr = pMFVideoDevicesArray[i]->GetAllocatedString(
+			MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
+			&deviceName, &nameLength);
+		if (SUCCEEDED(hr) && deviceName != NULL)
+			deviceNames.push_back(std::wstring(deviceName, nameLength));
 	}
-	imageFile.close();
+
+	SafeRelease(&pAttributes);
+	for (int i = 0; i < videoDevicesCount; i++)
+		SafeRelease(&pMFVideoDevicesArray[i]);
+
+	if(hr==S_OK)
+		return deviceNames;
+	else
+		return std::vector<std::wstring>();
+
+	
+}
+
+template <class T> static void Helpers::SafeRelease(T** ppT)
+{
+	if (*ppT)
+	{
+		(*ppT)->Release();
+		*ppT = NULL;
+	}
 }
