@@ -11,9 +11,8 @@ MainFrame::MainFrame(const wxString& title, const wxSize& size)
 	mfStreamContainer = new wxPanel(basePanel, wxID_ANY, wxPoint(20, 20), wxSize(640, 480));
 	wxButton* btnCapture = new wxButton(basePanel, wxID_ANY, wxEmptyString, wxPoint(680, 20));
 
-	HWND streamHandle = mfStreamContainer->GetHWND();
 
-	std::vector<std::wstring> deviceNames = Helpers::getDeviceNames();
+	std::vector<std::wstring> deviceNames = Helpers::getVideoDeviceNames();
 	wxArrayString deviceDisplayNamesAS=Helpers::wxArrStrFromVector(deviceNames);
 
 

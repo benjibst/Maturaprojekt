@@ -11,7 +11,7 @@ wxArrayString Helpers::wxArrStrFromVector(std::vector<std::wstring> vec)
 	return deviceDisplayNames;
 }
 
-std::vector<std::wstring> Helpers::getDeviceNames()
+std::vector<std::wstring> Helpers::getVideoDeviceNames()
 {
 	std::vector<std::wstring> deviceNames;
 	HRESULT hr;

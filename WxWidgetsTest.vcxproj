@@ -156,11 +156,13 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="MainFrame.cpp" />
+    <ClCompile Include="OCVProc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="MainFrame.h" />
+    <ClInclude Include="OCVProc.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
