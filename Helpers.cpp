@@ -17,7 +17,7 @@ std::vector<std::wstring> Helpers::getVideoDeviceNames()
 	HRESULT hr;
 	uint32_t videoDevicesCount;
 	uint32_t nameLength = 0;
-	wchar_t* deviceName;	
+	wchar_t* deviceName;
 	IMFActivate** pMFVideoDevicesArray = NULL;
 	IMFAttributes* pAttributes = NULL;
 	// Create an attribute store to specify the enumeration parameters.
@@ -32,7 +32,7 @@ std::vector<std::wstring> Helpers::getVideoDeviceNames()
 	// Enumerate devices.
 
 	hr = MFEnumDeviceSources(pAttributes, &pMFVideoDevicesArray, &videoDevicesCount);
-	
+
 	for (UINT32 i = 0; i < videoDevicesCount; i++)
 	{
 		hr = pMFVideoDevicesArray[i]->GetAllocatedString(
@@ -46,12 +46,46 @@ std::vector<std::wstring> Helpers::getVideoDeviceNames()
 	for (int i = 0; i < videoDevicesCount; i++)
 		SafeRelease(&pMFVideoDevicesArray[i]);
 
-	if(hr==S_OK)
+	if (hr == S_OK)
 		return deviceNames;
 	else
 		return std::vector<std::wstring>();
 
-	
+
+}
+
+bool Helpers::ConvertMatBitmapTowxBitmapMSW(cv::Mat& matBitmap, wxBitmap& bitmap)
+{
+	wxCHECK(!matBitmap.empty(), false);
+	wxCHECK(matBitmap.type() == CV_8UC3, false);
+	wxCHECK(matBitmap.dims == 2, false);
+	wxCHECK(bitmap.IsOk(), false);
+	wxCHECK(bitmap.GetWidth() == matBitmap.cols && bitmap.GetHeight() == matBitmap.rows, false);
+	wxCHECK(bitmap.GetDepth() == 24, false);
+
+	if (!(bitmap.IsDIB()
+		&& matBitmap.isContinuous()
+		&& matBitmap.cols % 4 == 0))
+		return false;
+	else 
+	{
+		const HDC  hScreenDC = ::GetDC(nullptr);
+		BITMAPINFO bitmapInfo{ 0 };
+		bool       success;
+
+		bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFO) - sizeof(RGBQUAD);
+		bitmapInfo.bmiHeader.biWidth = bitmap.GetWidth();
+		bitmapInfo.bmiHeader.biHeight = 0 - bitmap.GetHeight();
+		bitmapInfo.bmiHeader.biPlanes = 1;
+		bitmapInfo.bmiHeader.biBitCount = 24;
+		bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+		success = ::SetDIBits(hScreenDC, bitmap.GetHBITMAP(), 0, bitmap.GetHeight(),
+			matBitmap.data, &bitmapInfo, DIB_RGB_COLORS) != 0;
+		::ReleaseDC(nullptr, hScreenDC);
+
+		return success;
+	}
 }
 
 template <class T> static void Helpers::SafeRelease(T** ppT)

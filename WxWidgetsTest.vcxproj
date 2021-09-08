@@ -157,12 +157,14 @@
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="OCVProc.cpp" />
+    <ClCompile Include="wxImagePanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="OCVProc.h" />
+    <ClInclude Include="wxImagePanel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

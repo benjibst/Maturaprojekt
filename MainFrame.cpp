@@ -8,7 +8,7 @@ MainFrame::MainFrame(const wxString& title, const wxSize& size)
 
 	basePanel = new wxPanel(this, wxID_ANY);
 	basePanel->SetBackgroundColour(wxColour(0xFFFFFFul));;
-	mfStreamContainer = new wxPanel(basePanel, wxID_ANY, wxPoint(20, 20), wxSize(640, 480));
+	streamContainer = new wxPanel(basePanel, wxID_ANY, wxPoint(20, 20), wxSize(640, 480));
 	wxButton* btnCapture = new wxButton(basePanel, wxID_ANY, wxEmptyString, wxPoint(680, 20));
 
 
@@ -22,6 +22,8 @@ MainFrame::MainFrame(const wxString& title, const wxSize& size)
 	if (dialogResult == wxID_OK)
 	{
 		int selectedDevice = selectDevice.GetSelection();
+		ocvProc = new OCVProc(selectedDevice, streamContainer);
+		ocvProc->StartCameraStream();
 	}
 
 }
