@@ -6,13 +6,19 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+
 class MainFrame :public wxFrame
 {
-	int selectedDevice=-1;
+	int selectedDevice;
 	wxPanel* streamContainer;
 	wxPanel* basePanel;
 	OCVProc* ocvProc;
+	wxStandardID EnterCameraIP(wxWindow* parent,std::string& ip);
+	wxStandardID SelectString(wxWindow* parent, std::vector<wchar_t*> strings, int& index);
+	void InitUI(wxSize size);
 public:
+	bool cameraFound = false;
 	MainFrame(const wxString& title, const wxSize& size);
+	~MainFrame();
 };
 

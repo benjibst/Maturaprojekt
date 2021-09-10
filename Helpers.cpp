@@ -11,9 +11,9 @@ wxArrayString Helpers::wxArrStrFromVector(std::vector<std::wstring> vec)
 	return deviceDisplayNames;
 }
 
-std::vector<std::wstring> Helpers::getVideoDeviceNames()
+std::vector<wchar_t*> Helpers::getVideoDeviceNames()
 {
-	std::vector<std::wstring> deviceNames;
+	std::vector<wchar_t*> deviceNames;
 	HRESULT hr;
 	uint32_t videoDevicesCount;
 	uint32_t nameLength = 0;
@@ -39,7 +39,7 @@ std::vector<std::wstring> Helpers::getVideoDeviceNames()
 			MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
 			&deviceName, &nameLength);
 		if (SUCCEEDED(hr) && deviceName != NULL)
-			deviceNames.push_back(std::wstring(deviceName, nameLength));
+			deviceNames.push_back(deviceName);
 	}
 
 	SafeRelease(&pAttributes);
@@ -49,9 +49,7 @@ std::vector<std::wstring> Helpers::getVideoDeviceNames()
 	if (hr == S_OK)
 		return deviceNames;
 	else
-		return std::vector<std::wstring>();
-
-
+		return std::vector<wchar_t*>();
 }
 
 bool Helpers::ConvertMatBitmapTowxBitmapMSW(cv::Mat& matBitmap, wxBitmap& bitmap)
@@ -67,7 +65,7 @@ bool Helpers::ConvertMatBitmapTowxBitmapMSW(cv::Mat& matBitmap, wxBitmap& bitmap
 		&& matBitmap.isContinuous()
 		&& matBitmap.cols % 4 == 0))
 		return false;
-	else 
+	else
 	{
 		const HDC  hScreenDC = ::GetDC(nullptr);
 		BITMAPINFO bitmapInfo{ 0 };

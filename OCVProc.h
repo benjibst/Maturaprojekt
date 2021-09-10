@@ -13,16 +13,20 @@ const int fpsIntervalMS = 30;
 class OCVProc
 {
 private:
-	wxPanel* streamPanel;
+	HDC drawingDC = 0;
+	bool stream = false;
 	cv::Mat framePreProc, frameCanny, framePostProc;
 	cv::Size cameraRes;
-	wxBitmap displayImage;
 	cv::VideoCapture camera;
 	std::thread cameraStream;
+	void GetSizeFromCamera();
 public:
-	OCVProc(int selectedCameraIndex, wxPanel* surface);
+	bool Init(int selectedCameraIndex, HDC drawingDC);
+	bool Init(std::string cameraIP, HDC drawingDC);
 	void StartCameraStream();
 	void StopCameraStream();
 	void previewLoop();
+	OCVProc();
+	~OCVProc();
 };
 
