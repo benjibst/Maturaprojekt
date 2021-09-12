@@ -8,8 +8,6 @@
 #include <wx/wx.h>
 #endif
 
-const int fpsIntervalMS = 30;
-
 class OCVProc
 {
 private:
