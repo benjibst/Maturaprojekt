@@ -4,12 +4,10 @@
 wxIMPLEMENT_APP(App);
 bool App::OnInit()
 {
-	MainFrame* mainFrame = new MainFrame(wxString("Test"), wxSize(900, 700));
+	mainFrame = new MainFrame(wxString("Test"), wxSize(900, 700));
 	if (mainFrame->cameraFound)
 		mainFrame->Show(true);
 	else
-	{
 		mainFrame->Destroy();
-	}
 	return true;
 }

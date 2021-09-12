@@ -12,6 +12,7 @@ class MainFrame :public wxFrame
 	int selectedDevice;
 	wxPanel* streamContainer;
 	wxPanel* basePanel;
+	wxButton* btnCapture;
 	OCVProc* ocvProc;
 	wxStandardID EnterCameraIP(wxWindow* parent,std::string& ip);
 	wxStandardID SelectString(wxWindow* parent, std::vector<wchar_t*> strings, int& index);

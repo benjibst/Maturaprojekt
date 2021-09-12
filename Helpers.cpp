@@ -11,45 +11,39 @@ wxArrayString Helpers::wxArrStrFromVector(std::vector<std::wstring> vec)
 	return deviceDisplayNames;
 }
 
-std::vector<wchar_t*> Helpers::getVideoDeviceNames()
+wxStandardID Helpers::getVideoDeviceNames(std::vector<wchar_t*>& deviceNames)
 {
-	std::vector<wchar_t*> deviceNames;
-	HRESULT hr;
 	uint32_t videoDevicesCount;
 	uint32_t nameLength = 0;
 	wchar_t* deviceName;
+
 	IMFActivate** pMFVideoDevicesArray = NULL;
 	IMFAttributes* pAttributes = NULL;
 	// Create an attribute store to specify the enumeration parameters.
-	hr = MFCreateAttributes(&pAttributes, 1);
+	if (MFCreateAttributes(&pAttributes, 1) != S_OK)
+		goto RELEASE;
 
 	// Source type: video capture devices
-	hr = pAttributes->SetGUID(
-		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
-		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
-	);
+	if (pAttributes->SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE, MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID) != S_OK)
+		goto RELEASE;
 
 	// Enumerate devices.
-
-	hr = MFEnumDeviceSources(pAttributes, &pMFVideoDevicesArray, &videoDevicesCount);
+	if (MFEnumDeviceSources(pAttributes, &pMFVideoDevicesArray, &videoDevicesCount) != S_OK)
+		goto RELEASE;
 
 	for (UINT32 i = 0; i < videoDevicesCount; i++)
 	{
-		hr = pMFVideoDevicesArray[i]->GetAllocatedString(
-			MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
-			&deviceName, &nameLength);
-		if (SUCCEEDED(hr) && deviceName != NULL)
-			deviceNames.push_back(deviceName);
+		if (pMFVideoDevicesArray[i]->GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME, &deviceName, &nameLength) != S_OK)
+			return wxID_CANCEL;
+		deviceNames.push_back(deviceName);
 	}
+	return wxID_OK;
 
+	RELEASE:
 	SafeRelease(&pAttributes);
-	for (int i = 0; i < videoDevicesCount; i++)
+	for (unsigned int i = 0; i < videoDevicesCount; i++)
 		SafeRelease(&pMFVideoDevicesArray[i]);
-
-	if (hr == S_OK)
-		return deviceNames;
-	else
-		return std::vector<wchar_t*>();
+	return wxID_CANCEL;
 }
 
 bool Helpers::ConvertMatBitmapTowxBitmapMSW(cv::Mat& matBitmap, wxBitmap& bitmap)

@@ -14,7 +14,7 @@ class Helpers
 {
 public:
 	static wxArrayString wxArrStrFromVector(std::vector<std::wstring>vector);
-	static std::vector<wchar_t*> getVideoDeviceNames();
+	static wxStandardID getVideoDeviceNames(std::vector<wchar_t*>& deviceNames);
 	static bool ConvertMatBitmapTowxBitmapMSW(cv::Mat& matBitmap, wxBitmap& bitmap);
 
 	template <class T> static void SafeRelease(T** ppT);

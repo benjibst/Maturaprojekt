@@ -6,6 +6,7 @@
 #endif
 class App : public wxApp
 {
+    MainFrame* mainFrame;
 public:
     virtual bool OnInit();
 };
