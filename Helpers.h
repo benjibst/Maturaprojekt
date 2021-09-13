@@ -1,13 +1,13 @@
 #pragma once
-#include <mfapi.h>
-#include <string>
-#include <mfidl.h>
+
 #include <Windows.h>
+#include <mfidl.h>
+#include <string>
+#include <mfapi.h>
 #include <vector>
 #include <wx/arrstr.h>
 #include <opencv2/core/mat.hpp>
 #include <wx/bitmap.h>
-#include <wx/dcclient.h>
 
 
 class Helpers
@@ -15,7 +15,6 @@ class Helpers
 public:
 	static wxArrayString wxArrStrFromVector(std::vector<std::wstring>vector);
 	static wxStandardID getVideoDeviceNames(std::vector<wchar_t*>& deviceNames);
-	static bool ConvertMatBitmapTowxBitmapMSW(cv::Mat& matBitmap, wxBitmap& bitmap);
 
 	template <class T> static void SafeRelease(T** ppT);
 };

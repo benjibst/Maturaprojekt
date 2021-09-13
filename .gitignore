@@ -2,7 +2,6 @@
 # Diese .gitignore-Datei wurde von Microsoft(R) Visual Studio automatisch erstellt.
 ################################################################################
 
-/x64/Debug
+/x64
 /.vs/WxWidgetsTest/v16
-/x64/Release
 /Images

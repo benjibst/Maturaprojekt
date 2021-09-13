@@ -1,11 +1,13 @@
 {
     "configurations": [
         {
-            "name": "x64",
+            "name": "x64-Release",
             "includePath": [
-                "${WXWIN}\\include\\msvc",
-                "${OPENCV_DIR}\\..\\..\\include",
-                "${WXWIN}\\include"
+                "${WXWIN}/include/msvc",
+                "${OPENCV_DIR}/../../include",
+                "${WXWIN}/include",
+                "D:/Windows Kits/10/Include/10.0.19041.0/um",
+                "${workspaceFolder}"
             ],
             "defines": [
                 "_DEBUG",
@@ -18,10 +20,7 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "windows-msvc-x64",
             "compilerArgs": [],
-            "browse": {
-                "path": ["${workspaceFolder}"],
-                "limitSymbolsToIncludedHeaders": true
-            }
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4

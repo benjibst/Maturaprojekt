@@ -2,6 +2,7 @@
 #include "Helpers.h"
 #include "OCVProc.h"
 #include <wx/choicdlg.h>
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>

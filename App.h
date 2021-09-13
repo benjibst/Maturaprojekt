@@ -1,6 +1,7 @@
 #pragma once
-#include <wx/wxprec.h>
 #include "MainFrame.h"
+
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif

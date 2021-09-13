@@ -1,8 +1,9 @@
 #pragma once
-#include "opencv2/imgproc/imgproc.hpp"
 #include "Helpers.h"
+#include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/videoio.hpp"
 #include <chrono>
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
