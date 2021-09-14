@@ -6,8 +6,6 @@
 #include <mfapi.h>
 #include <vector>
 #include <wx/arrstr.h>
-#include <opencv2/core/mat.hpp>
-#include <wx/bitmap.h>
 
 
 class Helpers
