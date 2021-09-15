@@ -5,13 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Start Debug",
+            "name": "(Windows) Starten",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "..\\x64\\Debug\\WxWidgetsTest.exe",
-            "stopAtEntry": true,
+            "args": [],
+            "stopAtEntry": false,
             "cwd": "${fileDirname}",
-            "console": "externalTerminal"
+            "environment": [],
+            "console": "internalConsole"
         }
     ]
 }

@@ -1,1 +1,0 @@
-msbuild WxWidgetsTest.vcxproj /p:Configuration=Release /p:Platform=x64

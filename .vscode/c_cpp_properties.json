@@ -19,8 +19,7 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "windows-msvc-x64",
-            "compilerArgs": [],
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "compilerArgs": []
         }
     ],
     "version": 4

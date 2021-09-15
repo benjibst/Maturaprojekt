@@ -1,11 +1,14 @@
 #include "MainFrame.h"
+void MainFrame::btnCaptureClicked(wxCommandEvent& event)
+{
+	ocvProc->StopCameraStream();
+	ocvProc->ProcessImage();
+}
 
 MainFrame::MainFrame(const wxString& title, const wxSize& size)
-	:wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER))
+	:wxFrame(0, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER))
 {
 	InitUI(size);
-
-
 
 	HDC drawingDC = GetDC(streamContainer->GetHWND());
 
@@ -61,6 +64,7 @@ void MainFrame::InitUI(wxSize size)
 	basePanel->SetBackgroundColour(wxColour(0xFFFFFFul));;
 	streamContainer = new wxPanel(basePanel, wxID_ANY, wxPoint(20, 20), wxSize(640, 480));
 	btnCapture = new wxButton(basePanel, wxID_ANY, wxEmptyString, wxPoint(680, 20));
+	btnCapture->Bind(wxEVT_BUTTON,&MainFrame::btnCaptureClicked,this);
 }
 
 MainFrame::~MainFrame()
@@ -70,5 +74,4 @@ MainFrame::~MainFrame()
 	streamContainer->Destroy();
 	btnCapture->Destroy();
 	basePanel->Destroy();
-
 }

@@ -17,6 +17,7 @@ class MainFrame :public wxFrame
 	wxStandardID EnterCameraIP(wxWindow* parent,std::string& ip);
 	wxStandardID SelectString(wxWindow* parent, std::vector<wchar_t*> strings, int& index);
 	void InitUI(wxSize size);
+	void btnCaptureClicked(wxCommandEvent& event);
 public:
 	bool cameraFound = false;
 	MainFrame(const wxString& title, const wxSize& size);

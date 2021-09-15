@@ -19,12 +19,16 @@ private:
 	cv::VideoCapture camera;
 	std::thread cameraStream;
 	void GetSizeFromCamera();
+	void previewLoop();
+	double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0);
+	void setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour);
+	void drawMatToDC(cv::Mat& mat);
 public:
 	bool Init(int selectedCameraIndex, HDC drawingDC);
 	bool Init(std::string cameraIP, HDC drawingDC);
 	void StartCameraStream();
 	void StopCameraStream();
-	void previewLoop();
+	void ProcessImage();
 	OCVProc();
 	~OCVProc();
 };
