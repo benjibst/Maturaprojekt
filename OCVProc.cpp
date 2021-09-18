@@ -6,9 +6,10 @@ void OCVProc::GetSizeFromCamera()
 	cameraRes.height = camera.get(cv::CAP_PROP_FRAME_HEIGHT);
 }
 
-bool OCVProc::Init(int selectedCameraIndex, HDC drawingDC)
+bool OCVProc::Init(int selectedCameraIndex, wxPanel* panel)
 {
-	this->drawingDC = drawingDC;
+	this->drawingDC = GetDC(panel->GetHWND());
+	this->panel = panel;
 	if (camera.open(selectedCameraIndex, cv::CAP_MSMF))
 	{
 		GetSizeFromCamera();
@@ -19,9 +20,9 @@ bool OCVProc::Init(int selectedCameraIndex, HDC drawingDC)
 		return false;
 }
 
-bool OCVProc::Init(std::string cameraIP, HDC drawingDC)
+bool OCVProc::Init(std::string cameraIP, wxPanel* panel)
 {
-	this->drawingDC = drawingDC;
+	this->drawingDC = GetDC(panel->GetHWND());
 	if (camera.open(cv::String(cameraIP)))
 	{
 		GetSizeFromCamera();
@@ -34,7 +35,6 @@ bool OCVProc::Init(std::string cameraIP, HDC drawingDC)
 
 void OCVProc::StartCameraStream()
 {
-	stream = true;
 	cameraStream = std::thread(&OCVProc::previewLoop, this);
 }
 
@@ -49,10 +49,8 @@ void OCVProc::StopCameraStream()
 
 void OCVProc::previewLoop()
 {
-	if (!camera.isOpened())
-		return;
-		
-	cv::Mat gray, canny24, gauss;
+	cv::Mat gray, canny24, gauss, rotated, mirrored;
+	stream = true;
 	while (stream)
 	{
 		camera >> framePreProc;
@@ -61,8 +59,16 @@ void OCVProc::previewLoop()
 		cv::GaussianBlur(gray, gauss, cv::Size(3, 3), 0);
 		// Use Canny instead of threshold to catch squares with gradient shading
 		cv::Canny(gauss, frameCanny, 100, 200);
+		if (rotation != 4)
+			cv::rotate(frameCanny, rotated, rotation);
+		else
+			rotated = frameCanny;
+		if (mirror)
+			cv::flip(rotated, mirrored, 1);
+		else
+			mirrored = rotated;
 
-		cv::cvtColor(frameCanny, canny24, cv::COLOR_GRAY2BGR, 3);
+		cv::cvtColor(mirrored, canny24, cv::COLOR_GRAY2BGR, 3);
 
 		drawMatToDC(canny24);
 	}
@@ -83,7 +89,7 @@ void OCVProc::ProcessImage()
 		// to the contour perimeter
 		cv::approxPolyDP(cv::Mat(contours[i]), approx, cv::arcLength(cv::Mat(contours[i]), true) * 0.12, true);
 
-		// Skip small or non-convex objects 
+		// Skip small or non-convex objects
 		if (cv::contourArea(contours[i]) < 200 || !cv::isContourConvex(approx))
 			continue;
 		else if (approx.size() == 4)
@@ -115,6 +121,16 @@ void OCVProc::ProcessImage()
 	drawMatToDC(framePostProc);
 }
 
+void OCVProc::mirrorStream() { mirror = !mirror; }
+void OCVProc::rotateStream()
+{
+	rotation=static_cast<cv::RotateFlags>((int)rotation+1);
+	if (rotation >= 3)
+		rotation = (cv::RotateFlags)0;
+	fillHDCBackground(cv::Scalar(255,255,255));
+	
+}
+
 double OCVProc::angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 {
 	double dx1 = pt1.x - pt0.x;
@@ -124,7 +140,7 @@ double OCVProc::angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 	return (dx1 * dx2 + dy1 * dy2) / sqrt((dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2) + 1e-10);
 }
 
-void OCVProc::setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour)
+void OCVProc::setLabel(cv::Mat &im, const std::string label, std::vector<cv::Point> &contour)
 {
 	int fontface = cv::FONT_HERSHEY_SIMPLEX;
 	double scale = 0.4;
@@ -139,7 +155,7 @@ void OCVProc::setLabel(cv::Mat& im, const std::string label, std::vector<cv::Poi
 	cv::putText(im, label, pt, fontface, scale, CV_RGB(0, 0, 0), thickness, 8);
 }
 
-void OCVProc::drawMatToDC(cv::Mat& mat)
+void OCVProc::drawMatToDC(cv::Mat &mat)
 {
 	BITMAPINFO info;
 	memset(&info, 0, sizeof(BITMAPINFO));
@@ -148,9 +164,14 @@ void OCVProc::drawMatToDC(cv::Mat& mat)
 	info.bmiHeader.biHeight = mat.rows;
 	info.bmiHeader.biPlanes = 1;
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	info.bmiHeader.biSizeImage = cameraRes.width * cameraRes.height * 3;
+	info.bmiHeader.biSizeImage = mat.cols * mat.rows * 3;
 	info.bmiHeader.biCompression = BI_RGB;
 	StretchDIBits(drawingDC, 0, 0, mat.cols, mat.rows, 0, 0, mat.cols, mat.rows, mat.data, &info, DIB_RGB_COLORS, SRCCOPY);
+}
+void OCVProc::fillHDCBackground(cv::Scalar colour)
+{
+	cv::Mat matBackGround;
+	matBackGround = cv::Mat(cv::Size(panel.))
 }
 
 OCVProc::OCVProc()
