@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31613.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WxWidgetsTest", "WxWidgetsTest.vcxproj", "{48F6EFC8-FD03-414A-A7DF-08E2873A878B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48F6EFC8-FD03-414A-A7DF-08E2873A878B}.Debug|x64.ActiveCfg = Debug|x64
+		{48F6EFC8-FD03-414A-A7DF-08E2873A878B}.Debug|x64.Build.0 = Debug|x64
+		{48F6EFC8-FD03-414A-A7DF-08E2873A878B}.Release|x64.ActiveCfg = Release|x64
+		{48F6EFC8-FD03-414A-A7DF-08E2873A878B}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE3CACD8-DECA-4731-8E85-C1B0119475AD}
+	EndGlobalSection
+EndGlobal

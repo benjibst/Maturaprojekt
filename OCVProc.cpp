@@ -23,6 +23,7 @@ bool OCVProc::Init(int selectedCameraIndex, wxPanel* panel)
 bool OCVProc::Init(std::string cameraIP, wxPanel* panel)
 {
 	this->drawingDC = GetDC(panel->GetHWND());
+	this->panel = panel;
 	if (camera.open(cv::String(cameraIP)))
 	{
 		GetSizeFromCamera();
@@ -171,7 +172,10 @@ void OCVProc::drawMatToDC(cv::Mat &mat)
 void OCVProc::fillHDCBackground(cv::Scalar colour)
 {
 	cv::Mat matBackGround;
-	matBackGround = cv::Mat(cv::Size(panel.))
+	cv::Size sizePanel;
+	panel->GetClientSize(&sizePanel.width,&sizePanel.height);
+	matBackGround = cv::Mat(sizePanel,cv::CV_8UC3);
+
 }
 
 OCVProc::OCVProc()
