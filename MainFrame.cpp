@@ -1,8 +1,17 @@
 #include "MainFrame.h"
 void MainFrame::btnCaptureClicked(wxCommandEvent &event)
 {
-	ocvProc->StopCameraStream();
-	ocvProc->ProcessImage();
+	if (ocvProc->IsStreaming()) 
+	{
+		ocvProc->StopCameraStream();
+		ocvProc->ProcessImage();
+		btnCapture->SetLabel(wxString("Restart"));
+	}
+	else
+	{
+		ocvProc->StartCameraStream();
+		btnCapture->SetLabel(wxString("Capture!"));
+	}
 }
 
 void MainFrame::btnRotateClicked(wxCommandEvent &event)
@@ -17,31 +26,32 @@ void MainFrame::btnMirrorClicked(wxCommandEvent &event)
 MainFrame::MainFrame(const wxString &title, const wxSize &size)
 	: wxFrame(0, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER))
 {
-	InitUI(size);
-
 	ocvProc = new OCVProc();
+	cameraFound = SelectCameraDialog();
+	if (cameraFound)
+	{
+		InitUI(size, ocvProc->GetCameraResolution());
+		ocvProc->SetStreamCanvas(streamContainer);
+		ocvProc->StartCameraStream();
+	}
+}
 
-	std::vector<wchar_t *> deviceNames;
-	wxStandardID dialogResult = Helpers::getVideoDeviceNames(deviceNames);
-	if (dialogResult == wxID_CANCEL || deviceNames.size() == 0)
+bool MainFrame::SelectCameraDialog()
+{
+	std::string deviceIP;
+	int selectedDeviceID;
+	std::vector<wchar_t*> deviceNames;
+	HRESULT result = Helpers::getVideoDeviceNames(deviceNames);
+	if (result != S_OK || deviceNames.size() == 0)
 	{
-		std::string deviceIP;
 		if (EnterCameraIP(this, deviceIP) == wxID_OK)
-			cameraFound = ocvProc->Init(deviceIP, streamContainer);
-		return;
+			return ocvProc->OpenCamera(deviceIP);
 	}
-	else
-	{
-		int selectedDeviceID;
-		if (SelectString(this, deviceNames, selectedDeviceID) == wxID_OK)
-			cameraFound = ocvProc->Init(selectedDeviceID, streamContainer);
-		else
-		{
-			std::string deviceIP;
-			if (EnterCameraIP(this, deviceIP) == wxID_OK)
-				cameraFound = ocvProc->Init(deviceIP, streamContainer);
-		}
-	}
+	if (SelectString(this, deviceNames, selectedDeviceID) == wxID_OK)
+		return ocvProc->OpenCamera(selectedDeviceID);
+	if (EnterCameraIP(this, deviceIP) == wxID_OK)
+		return ocvProc->OpenCamera(deviceIP);
+	return false;
 }
 
 wxStandardID MainFrame::EnterCameraIP(wxWindow *parent, std::string &ip)
@@ -64,23 +74,25 @@ wxStandardID MainFrame::SelectString(wxWindow *parent, std::vector<wchar_t *> st
 	return dialogResult;
 }
 
-void MainFrame::InitUI(wxSize size)
+void MainFrame::InitUI(wxSize size,wxSize cameraRes)
 {
-	SetSize(size);
+	//640 ist standard x auflösung von droidcam
+	int maxXYcameraRes = std::max(cameraRes.x, cameraRes.y);
+	SetSize(wxSize(size.x + maxXYcameraRes-640,size.y+maxXYcameraRes-640));
 
 	basePanel = new wxPanel(this, wxID_ANY);
 	basePanel->SetBackgroundColour(wxColour(0xFFFFFFul));
-	streamContainer = new wxPanel(basePanel, wxID_ANY, wxPoint(20, 20), wxSize(640, 640));
+	streamContainer = new wxPanel(basePanel, wxID_ANY, wxPoint(20, 20), wxSize(maxXYcameraRes, maxXYcameraRes));
 
-	btnCapture = new wxButton(basePanel, wxID_ANY, wxString("Capture!"), wxPoint(680, 20), defaultButtonSize);
+	btnCapture = new wxButton(basePanel, wxID_ANY, wxString("Capture!"), wxPoint(40+maxXYcameraRes, 20), defaultButtonSize);
 	btnCapture->Bind(wxEVT_BUTTON, &MainFrame::btnCaptureClicked, this);
 
 	btnRotate = new wxButton(basePanel, wxID_ANY, wxEmptyString, 
-		wxPoint(680, 40 + defaultButtonSize.y), wxSize(defaultButtonSize.y, defaultButtonSize.y));
+		wxPoint(40+maxXYcameraRes, 40 + defaultButtonSize.y), wxSize(defaultButtonSize.y, defaultButtonSize.y));
 	btnRotate->Bind(wxEVT_BUTTON, &MainFrame::btnRotateClicked, this);
 
 	btnMirror = new wxButton(basePanel, wxID_ANY, wxEmptyString, 
-		wxPoint(680+defaultButtonSize.x+40, 40+defaultButtonSize.y), wxSize(defaultButtonSize.y, defaultButtonSize.y));
+		wxPoint(maxXYcameraRes+defaultButtonSize.x+80, 40+defaultButtonSize.y), wxSize(defaultButtonSize.y, defaultButtonSize.y));
 	btnMirror->Bind(wxEVT_BUTTON, &MainFrame::btnMirrorClicked, this);
 }
 

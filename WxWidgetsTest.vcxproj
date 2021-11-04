@@ -55,7 +55,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(OPENCV_DIR)\..\..\include;$(WXWIN)\include;$(ProjectDir)Dependencies</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(OPENCV_DIR)\..\..\include;$(WXWIN)\include;$(ProjectDir)Dependencies</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <CompileAs>Default</CompileAs>
     </ClCompile>
@@ -63,7 +63,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_x64_lib;$(OPENCV_DIR)\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;opencv_core453d.lib;opencv_imgproc453d.lib;opencv_videoio453d.lib</AdditionalDependencies>
+      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;opencv_core454d.lib;opencv_imgproc454d.lib;opencv_videoio454d.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -74,7 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(OPENCV_DIR)\..\..\include;$(ProjectDir)Dependencies</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(WXWIN)\include;$(OPENCV_DIR)\..\..\include;$(ProjectDir)Dependencies</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <CompileAs>Default</CompileAs>
     </ClCompile>
@@ -84,7 +84,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_x64_lib;$(OPENCV_DIR)\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;opencv_core453.lib;opencv_imgproc453.lib;opencv_videoio453.lib</AdditionalDependencies>
+      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;opencv_core454.lib;opencv_imgproc454.lib;opencv_videoio454.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

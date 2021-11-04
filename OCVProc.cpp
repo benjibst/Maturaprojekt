@@ -1,37 +1,48 @@
 #include "OCVProc.h"
 
-void OCVProc::GetSizeFromCamera()
+void OCVProc::InitCameraRes()
 {
 	cameraRes.width = camera.get(cv::CAP_PROP_FRAME_WIDTH);
 	cameraRes.height = camera.get(cv::CAP_PROP_FRAME_HEIGHT);
 }
 
-bool OCVProc::Init(int selectedCameraIndex, wxPanel* panel)
+void OCVProc::SetStreamCanvas(wxPanel* canvas)
 {
-	this->drawingDC = GetDC(panel->GetHWND());
-	this->panel = panel;
+	this->drawingDC = GetDC(canvas->GetHWND());
+	this->streamCanvas = canvas;
+}
+
+bool OCVProc::OpenCamera(int selectedCameraIndex)
+{
 	if (camera.open(selectedCameraIndex, cv::CAP_MSMF))
 	{
-		GetSizeFromCamera();
-		StartCameraStream();
+		InitCameraRes();
 		return true;
 	}
 	else
 		return false;
 }
 
-bool OCVProc::Init(std::string cameraIP, wxPanel* panel)
+bool OCVProc::OpenCamera(std::string cameraIP)
 {
-	this->drawingDC = GetDC(panel->GetHWND());
-	this->panel = panel;
 	if (camera.open(cv::String(cameraIP)))
 	{
-		GetSizeFromCamera();
-		StartCameraStream();
+		InitCameraRes();
 		return true;
 	}
 	else
 		return false;
+}
+
+bool OCVProc::IsStreaming()
+{
+	return stream;
+}
+
+
+wxSize OCVProc::GetCameraResolution()
+{
+	return wxSize(cameraRes.width,cameraRes.height);
 }
 
 void OCVProc::StartCameraStream()
@@ -50,39 +61,37 @@ void OCVProc::StopCameraStream()
 
 void OCVProc::previewLoop()
 {
-	cv::Mat gray, canny24, gauss, rotated, mirrored;
+	cv::Mat rotated;
 	stream = true;
 	while (stream)
 	{
 		camera >> framePreProc;
 		// Convert to grayscale
-		cv::cvtColor(framePreProc, gray, cv::COLOR_BGR2GRAY);
-		cv::GaussianBlur(gray, gauss, cv::Size(3, 3), 0);
-		// Use Canny instead of threshold to catch squares with gradient shading
-		cv::Canny(gauss, frameCanny, 100, 200);
-		if (rotation != 4)
-			cv::rotate(frameCanny, rotated, rotation);
+		
+		if ((int)rotation != 4)
+			cv::rotate(framePreProc, rotated, rotation);
 		else
-			rotated = frameCanny;
+			rotated = framePreProc;
 		if (mirror)
-			cv::flip(rotated, mirrored, 1);
+			cv::flip(rotated, afterTransform, 1);
 		else
-			mirrored = rotated;
-
-		cv::cvtColor(mirrored, canny24, cv::COLOR_GRAY2BGR, 3);
-
-		drawMatToDC(canny24);
+			afterTransform = rotated;
+		drawMatToDC(afterTransform);
 	}
 }
 
 void OCVProc::ProcessImage()
 {
+	cv::Mat gray, gauss, canny;
 	std::vector<std::vector<cv::Point>> contours;
-
-	cv::findContours(frameCanny, contours, cv::RETR_LIST, cv::CHAIN_APPROX_TC89_KCOS);
+	cv::cvtColor(afterTransform, gray, cv::COLOR_BGR2GRAY);
+	cv::GaussianBlur(gray, gauss, cv::Size(3, 3), 0);
+	// Use Canny instead of threshold to catch squares with gradient shading
+	cv::Canny(gauss, canny, 100, 200);
+	cv::findContours(canny, contours, cv::RETR_LIST, cv::CHAIN_APPROX_TC89_KCOS);
 
 	std::vector<cv::Point> approx;
-	framePostProc = framePreProc.clone();
+	framePostProc = afterTransform.clone();
 
 	for (int i = 0; i < contours.size(); i++)
 	{
@@ -125,10 +134,10 @@ void OCVProc::ProcessImage()
 void OCVProc::mirrorStream() { mirror = !mirror; }
 void OCVProc::rotateStream()
 {
+	streamCanvas->ClearBackground();
 	rotation=static_cast<cv::RotateFlags>((int)rotation+1);
 	if (rotation >= 3)
 		rotation = (cv::RotateFlags)0;
-	fillHDCBackground(cv::Scalar(255,255,255));
 	
 }
 
@@ -168,14 +177,6 @@ void OCVProc::drawMatToDC(cv::Mat &mat)
 	info.bmiHeader.biSizeImage = mat.cols * mat.rows * 3;
 	info.bmiHeader.biCompression = BI_RGB;
 	StretchDIBits(drawingDC, 0, 0, mat.cols, mat.rows, 0, 0, mat.cols, mat.rows, mat.data, &info, DIB_RGB_COLORS, SRCCOPY);
-}
-void OCVProc::fillHDCBackground(cv::Scalar colour)
-{
-	cv::Mat matBackGround;
-	cv::Size sizePanel;
-	panel->GetClientSize(&sizePanel.width,&sizePanel.height);
-	matBackGround = cv::Mat(sizePanel,cv::CV_8UC3);
-
 }
 
 OCVProc::OCVProc()

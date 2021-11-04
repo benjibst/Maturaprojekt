@@ -1,6 +1,7 @@
 #pragma once
 #include "Helpers.h"
 #include "OCVProc.h"
+#include <algorithm>
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -10,7 +11,7 @@
 class MainFrame : public wxFrame
 {
 	int selectedDevice;
-	wxSize defaultButtonSize = wxSize(60,25);
+	wxSize defaultButtonSize = wxSize(60,30);
 	wxPanel *streamContainer;
 	wxPanel *basePanel;
 	wxButton *btnCapture;
@@ -19,7 +20,7 @@ class MainFrame : public wxFrame
 	OCVProc *ocvProc;
 	wxStandardID EnterCameraIP(wxWindow *parent, std::string &ip);
 	wxStandardID SelectString(wxWindow *parent, std::vector<wchar_t *> strings, int &index);
-	void InitUI(wxSize size);
+	void InitUI(wxSize size,wxSize cameraRes);
 	void btnCaptureClicked(wxCommandEvent &event);
 	void btnRotateClicked(wxCommandEvent &event);
 	void btnMirrorClicked(wxCommandEvent &event);
@@ -28,5 +29,6 @@ class MainFrame : public wxFrame
 public:
 	bool CameraFound();
 	MainFrame(const wxString &title, const wxSize &size);
+	bool SelectCameraDialog();
 	~MainFrame();
 };
