@@ -3,6 +3,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/videoio.hpp"
 #include "opencv2/core.hpp"
+#include "opencv2/calib3d.hpp"
 #include <chrono>
 
 #include <wx/wxprec.h>
@@ -17,7 +18,7 @@ private:
 	wxPanel* streamCanvas = nullptr;
 	bool stream = false;
 	bool mirror = false;
-	cv::RotateFlags rotation = (cv::RotateFlags)4;
+	int rotation = 4;
 	cv::Mat framePreProc,afterTransform, framePostProc;
 	cv::Size cameraRes;
 	cv::VideoCapture camera;
@@ -26,6 +27,7 @@ private:
 	void previewLoop();
 	double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0);
 	void setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour);
+	void setLabelAtPoint(cv::Mat& im, const std::string label, cv::Point point);
 	void drawMatToDC(cv::Mat& mat);
 public:
 	void SetStreamCanvas(wxPanel* canvas);
