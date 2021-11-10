@@ -42,7 +42,7 @@ bool OCVProc::IsStreaming()
 
 wxSize OCVProc::GetCameraResolution()
 {
-	return wxSize(cameraRes.width,cameraRes.height);
+	return wxSize(cameraRes.width, cameraRes.height);
 }
 
 void OCVProc::StartCameraStream()
@@ -66,7 +66,7 @@ void OCVProc::previewLoop()
 	while (stream)
 	{
 		camera >> framePreProc;
-		
+
 		if (rotation != 4)
 			cv::rotate(framePreProc, rotated, rotation);
 		else
@@ -89,56 +89,32 @@ void OCVProc::ProcessImage()
 	// Use Canny instead of threshold to catch squares with gradient shading
 	cv::Canny(gauss, canny, 100, 200);
 	cv::findContours(canny, contours, cv::RETR_LIST, cv::CHAIN_APPROX_TC89_KCOS);
-	
+
 
 	std::vector<cv::Point> approx;
 	framePostProc = afterTransform.clone();
 
 	cv::findContours(canny, contoursExternal, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_TC89_KCOS);
 	std::vector<cv::Point> approxExternal;
-	cv::approxPolyDP(contoursExternal[0], approxExternal, cv::arcLength(cv::Mat(contoursExternal[0]), true) * 0.12, true);
-	if (approxExternal.size() == 4)
+	for (int i = 0; i < contoursExternal.size(); i++)
 	{
-		for (int i = 0; i < 4; i++)
-		{
-			setLabelAtPoint(framePostProc, std::to_string(i), approxExternal[i]);
-		}
+		cv::approxPolyDP(contoursExternal[i], approxExternal, cv::arcLength(cv::Mat(contoursExternal[0]), true) * 0.12, true);
+		if (isQuad(approxExternal))
+			for (int j = 0; j < 4; j++)
+			{
+				setLabelAtPoint(framePostProc, std::to_string(i), approxExternal[i]);
+			}
 	}
-
 
 	for (int i = 0; i < contours.size(); i++)
 	{
 		// Approximate contour with accuracy proportional
 		// to the contour perimeter
 		cv::approxPolyDP(cv::Mat(contours[i]), approx, cv::arcLength(cv::Mat(contours[i]), true) * 0.12, true);
-
-		// Skip small or non-convex objects
-		if (cv::contourArea(contours[i]) < 200 || !cv::isContourConvex(approx))
-			continue;
-		else if (approx.size() == 4)
+		if (isQuad(approx))
 		{
-			// Number of vertices of polygonal curve
-			int vtc = approx.size();
-
-			// Get the cosines of all corners
-			std::vector<double> cos;
-			for (int j = 2; j < vtc + 1; j++)
-				cos.push_back(angle(approx[j % vtc], approx[j - 2], approx[j - 1]));
-
-			// Sort ascending the cosine values
-			std::sort(cos.begin(), cos.end());
-
-			// Get the lowest and the highest cosine
-			double mincos = cos.front();
-			double maxcos = cos.back();
-
-			// Use the degrees obtained above and the number of vertices
-			// to determine the shape of the contour
-			if (vtc == 4 && mincos >= -0.3 && maxcos <= 0.3)
-			{
-				setLabel(framePostProc, "RECT", contours[i]);
-				cv::polylines(framePostProc, approx, true, cv::Scalar(0, 0, 255), 2);
-			}
+			setLabel(framePostProc, "RECT", contours[i]);
+			cv::polylines(framePostProc, approx, true, cv::Scalar(0, 0, 255), 2);
 		}
 	}
 	drawMatToDC(framePostProc);
@@ -150,7 +126,7 @@ void OCVProc::rotateStream()
 	streamCanvas->ClearBackground();
 	rotation++;
 	rotation %= 4;
-	
+
 }
 
 double OCVProc::angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
@@ -162,7 +138,32 @@ double OCVProc::angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
 	return (dx1 * dx2 + dy1 * dy2) / sqrt((dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2) + 1e-10);
 }
 
-void OCVProc::setLabel(cv::Mat &im, const std::string label, std::vector<cv::Point> &contour)
+bool OCVProc::isQuad(std::vector<cv::Point> contours)
+{
+	if (contours.size() != 4 || cv::contourArea(contours) < 100 || !cv::isContourConvex(contours))
+		return false;
+	// Number of vertices of polygonal curve
+	int vtc = 4;
+	// Get the cosines of all corners
+	std::vector<double> cos;
+	for (int j = 2; j < vtc + 1; j++)
+		cos.push_back(angle(contours[j % vtc], contours[j - 2], contours[j - 1]));
+
+	// Sort ascending the cosine values
+	std::sort(cos.begin(), cos.end());
+
+	// Get the lowest and the highest cosine
+	double mincos = cos.front();
+	double maxcos = cos.back();
+
+	// Use the degrees obtained above and the number of vertices
+	// to determine the shape of the contour
+	if (mincos >= -0.3 && maxcos <= 0.3)
+		return true;
+	return false;
+}
+
+void OCVProc::setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour)
 {
 	int fontface = cv::FONT_HERSHEY_SIMPLEX;
 	double scale = 0.4;
@@ -189,7 +190,7 @@ void OCVProc::setLabelAtPoint(cv::Mat& im, const std::string label, cv::Point po
 	cv::putText(im, label, point, fontface, scale, CV_RGB(0, 0, 0), thickness, 8);
 }
 
-void OCVProc::drawMatToDC(cv::Mat &mat)
+void OCVProc::drawMatToDC(cv::Mat& mat)
 {
 	BITMAPINFO info;
 	memset(&info, 0, sizeof(BITMAPINFO));

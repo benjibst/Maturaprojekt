@@ -56,9 +56,29 @@ bool MainFrame::SelectCameraDialog()
 
 wxStandardID MainFrame::EnterCameraIP(wxWindow *parent, std::string &ip)
 {
-	wxTextEntryDialog *enterIP = new wxTextEntryDialog(parent, wxString(""), wxString("Enter camera IP"), wxString("http://192.168.x.x:4747/video"));
+	std::string lastIP;
+	std::ifstream ifile;
+	std::ofstream ofile;
+	wxTextEntryDialog* enterIP;
+	ifile.open("ip.txt");
+	if (ifile.is_open())
+	{
+		std::getline(ifile, lastIP);
+		ifile.close();
+		enterIP = new wxTextEntryDialog(parent, wxString(""), wxString("Enter camera IP"), wxString(lastIP));
+	}
+	else
+		enterIP = new wxTextEntryDialog(parent, wxString(""), wxString("Enter camera IP"), wxString("http://192.168.x.x:4747/video"));
+
 	wxStandardID dialogResult = (wxStandardID)enterIP->ShowModal();
 	ip = dialogResult == wxID_OK ? std::string(enterIP->GetValue()) : "";
+	ofile.open("ip.txt");
+	if (ofile.is_open())
+	{
+		ofile.clear();
+		ofile<<ip;
+		ofile.close();
+	}
 	delete enterIP;
 	return dialogResult;
 }

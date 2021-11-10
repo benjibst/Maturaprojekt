@@ -2,6 +2,8 @@
 #include "Helpers.h"
 #include "OCVProc.h"
 #include <algorithm>
+#include <iostream>
+#include <fstream>
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
