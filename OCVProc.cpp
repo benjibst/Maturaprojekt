@@ -39,7 +39,6 @@ bool OCVProc::IsStreaming()
 	return stream;
 }
 
-
 wxSize OCVProc::GetCameraResolution()
 {
 	return wxSize(cameraRes.width, cameraRes.height);
@@ -67,7 +66,7 @@ void OCVProc::previewLoop()
 	{
 		camera >> framePreProc;
 
-		if (rotation != 4)
+		if (rotation != 3)
 			cv::rotate(framePreProc, rotated, rotation);
 		else
 			rotated = framePreProc;
@@ -83,39 +82,36 @@ void OCVProc::ProcessImage()
 {
 	cv::Mat gray, gauss, canny;
 	std::vector<std::vector<cv::Point>> contours;
-	std::vector<std::vector<cv::Point>> contoursExternal;
+	std::vector<cv::Point> currentPoly;		//angenäherte polygone
+	std::vector<std::vector<cv::Point>> allPoly;		//angenäherte polygone
+
 	cv::cvtColor(afterTransform, gray, cv::COLOR_BGR2GRAY);
-	cv::GaussianBlur(gray, gauss, cv::Size(3, 3), 0);
+	cv::GaussianBlur(gray, gauss, cv::Size(5, 5), 0);
 	// Use Canny instead of threshold to catch squares with gradient shading
 	cv::Canny(gauss, canny, 100, 200);
 	cv::findContours(canny, contours, cv::RETR_LIST, cv::CHAIN_APPROX_TC89_KCOS);
 
 
-	std::vector<cv::Point> approx;
 	framePostProc = afterTransform.clone();
 
-	cv::findContours(canny, contoursExternal, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_TC89_KCOS);
-	std::vector<cv::Point> approxExternal;
-	for (int i = 0; i < contoursExternal.size(); i++)
-	{
-		cv::approxPolyDP(contoursExternal[i], approxExternal, cv::arcLength(cv::Mat(contoursExternal[0]), true) * 0.12, true);
-		if (isQuad(approxExternal))
-			for (int j = 0; j < 4; j++)
-			{
-				setLabelAtPoint(framePostProc, std::to_string(i), approxExternal[i]);
-			}
-	}
-
+	currentPoly.resize(contours.size());
 	for (int i = 0; i < contours.size(); i++)
 	{
 		// Approximate contour with accuracy proportional
 		// to the contour perimeter
-		cv::approxPolyDP(cv::Mat(contours[i]), approx, cv::arcLength(cv::Mat(contours[i]), true) * 0.12, true);
-		if (isQuad(approx))
+		cv::approxPolyDP(cv::Mat(contours[i]), currentPoly, cv::arcLength(cv::Mat(contours[i]), true) * 0.12, true);
+		allPoly.push_back(currentPoly);
+	}
+		int quadcount{ 0 };
+	for (int i = 0; i < allPoly.size(); i++)
+	{
+		if (isQuad(allPoly[i]))
 		{
+			quadcount++;
 			setLabel(framePostProc, "RECT", contours[i]);
-			cv::polylines(framePostProc, approx, true, cv::Scalar(0, 0, 255), 2);
+			cv::polylines(framePostProc, allPoly[i], true, cv::Scalar(0, 0, 255), 2);
 		}
+		;
 	}
 	drawMatToDC(framePostProc);
 }
@@ -126,7 +122,6 @@ void OCVProc::rotateStream()
 	streamCanvas->ClearBackground();
 	rotation++;
 	rotation %= 4;
-
 }
 
 double OCVProc::angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
@@ -201,7 +196,7 @@ void OCVProc::drawMatToDC(cv::Mat& mat)
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	info.bmiHeader.biSizeImage = mat.cols * mat.rows * 3;
 	info.bmiHeader.biCompression = BI_RGB;
-	StretchDIBits(drawingDC, 0, 0, mat.cols, mat.rows, 0, 0, mat.cols, mat.rows, mat.data, &info, DIB_RGB_COLORS, SRCCOPY);
+	StretchDIBits(drawingDC, 0, mat.rows, mat.cols, -mat.rows, 0, 0, mat.cols, mat.rows, mat.data, &info, DIB_RGB_COLORS, SRCCOPY);
 }
 
 OCVProc::OCVProc()

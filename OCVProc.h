@@ -18,7 +18,7 @@ private:
 	wxPanel* streamCanvas = nullptr;
 	bool stream = false;
 	bool mirror = false;
-	int rotation = 4;
+	int rotation = 3;
 	cv::Mat framePreProc,afterTransform, framePostProc;
 	cv::Size cameraRes;
 	cv::VideoCapture camera;

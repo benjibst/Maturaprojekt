@@ -1,4 +1,16 @@
 #include "MainFrame.h"
+MainFrame::MainFrame(const wxString &title, const wxSize &size)
+	: wxFrame(0, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER))
+{
+	ocvProc = new OCVProc();
+	cameraFound = SelectCameraDialog();
+	if (cameraFound)
+	{
+		InitUI(size, ocvProc->GetCameraResolution());
+		ocvProc->SetStreamCanvas(streamContainer);
+		ocvProc->StartCameraStream();
+	}
+}
 void MainFrame::btnCaptureClicked(wxCommandEvent &event)
 {
 	if (ocvProc->IsStreaming()) 
@@ -23,18 +35,6 @@ void MainFrame::btnMirrorClicked(wxCommandEvent &event)
 	ocvProc->mirrorStream();
 }
 
-MainFrame::MainFrame(const wxString &title, const wxSize &size)
-	: wxFrame(0, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER))
-{
-	ocvProc = new OCVProc();
-	cameraFound = SelectCameraDialog();
-	if (cameraFound)
-	{
-		InitUI(size, ocvProc->GetCameraResolution());
-		ocvProc->SetStreamCanvas(streamContainer);
-		ocvProc->StartCameraStream();
-	}
-}
 
 bool MainFrame::SelectCameraDialog()
 {
@@ -64,11 +64,16 @@ wxStandardID MainFrame::EnterCameraIP(wxWindow *parent, std::string &ip)
 	if (ifile.is_open())
 	{
 		std::getline(ifile, lastIP);
-		ifile.close();
+		if (lastIP.length() == 0)
+			lastIP = "http://192.168.x.x:4747/video";
 		enterIP = new wxTextEntryDialog(parent, wxString(""), wxString("Enter camera IP"), wxString(lastIP));
+		ifile.close();
 	}
 	else
+	{
+		std::ofstream{ "ip.txt" };
 		enterIP = new wxTextEntryDialog(parent, wxString(""), wxString("Enter camera IP"), wxString("http://192.168.x.x:4747/video"));
+	}
 
 	wxStandardID dialogResult = (wxStandardID)enterIP->ShowModal();
 	ip = dialogResult == wxID_OK ? std::string(enterIP->GetValue()) : "";
