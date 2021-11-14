@@ -11,6 +11,8 @@
 #include <wx/wx.h>
 #endif
 
+#define defaultIP "http://192.168.x.x:4747/video"
+
 class OCVProc
 {
 private:
@@ -27,10 +29,12 @@ private:
 	void previewLoop();
 	double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0);
 	bool isQuad(std::vector<cv::Point> contours);
+	void removeDoubleQuads(std::vector<std::vector<cv::Point>>& quads);
 	void setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour);
 	void setLabelAtPoint(cv::Mat& im, const std::string label, cv::Point point);
 	void drawMatToDC(cv::Mat& mat);
 public:
+	static cv::Point quadCenter(std::vector<cv::Point> corners);
 	void SetStreamCanvas(wxPanel* canvas);
 	bool OpenCamera(int selectedCameraIndex);
 	bool OpenCamera(std::string cameraIP);

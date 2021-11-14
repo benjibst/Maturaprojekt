@@ -6,6 +6,18 @@ void OCVProc::InitCameraRes()
 	cameraRes.height = camera.get(cv::CAP_PROP_FRAME_HEIGHT);
 }
 
+cv::Point OCVProc::quadCenter(std::vector<cv::Point> corners)
+{
+	assert(corners.size() == 4);
+	int avgX = 0, avgY = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		avgX += corners[i].x;
+		avgY += corners[i].y;
+	}
+	return cv::Point(avgX / 4, avgY / 4);
+}
+
 void OCVProc::SetStreamCanvas(wxPanel* canvas)
 {
 	this->drawingDC = GetDC(canvas->GetHWND());
@@ -65,7 +77,6 @@ void OCVProc::previewLoop()
 	while (stream)
 	{
 		camera >> framePreProc;
-
 		if (rotation != 3)
 			cv::rotate(framePreProc, rotated, rotation);
 		else
@@ -83,14 +94,13 @@ void OCVProc::ProcessImage()
 	cv::Mat gray, gauss, canny;
 	std::vector<std::vector<cv::Point>> contours;
 	std::vector<cv::Point> currentPoly;		//angenäherte polygone
-	std::vector<std::vector<cv::Point>> allPoly;		//angenäherte polygone
+	std::vector<std::vector<cv::Point>> allQuad;		//angenäherte polygone
 
 	cv::cvtColor(afterTransform, gray, cv::COLOR_BGR2GRAY);
 	cv::GaussianBlur(gray, gauss, cv::Size(5, 5), 0);
 	// Use Canny instead of threshold to catch squares with gradient shading
 	cv::Canny(gauss, canny, 100, 200);
 	cv::findContours(canny, contours, cv::RETR_LIST, cv::CHAIN_APPROX_TC89_KCOS);
-
 
 	framePostProc = afterTransform.clone();
 
@@ -100,18 +110,14 @@ void OCVProc::ProcessImage()
 		// Approximate contour with accuracy proportional
 		// to the contour perimeter
 		cv::approxPolyDP(cv::Mat(contours[i]), currentPoly, cv::arcLength(cv::Mat(contours[i]), true) * 0.12, true);
-		allPoly.push_back(currentPoly);
+		if (isQuad(currentPoly))
+			allQuad.push_back(currentPoly);
 	}
-		int quadcount{ 0 };
-	for (int i = 0; i < allPoly.size(); i++)
+	removeDoubleQuads(allQuad);
+	for (int i = 0; i < allQuad.size(); i++)
 	{
-		if (isQuad(allPoly[i]))
-		{
-			quadcount++;
-			setLabel(framePostProc, "RECT", contours[i]);
-			cv::polylines(framePostProc, allPoly[i], true, cv::Scalar(0, 0, 255), 2);
-		}
-		;
+		setLabel(framePostProc, "RECT", allQuad[i]);
+		cv::polylines(framePostProc, allQuad[i], true, cv::Scalar(0, 0, 255), 2);
 	}
 	drawMatToDC(framePostProc);
 }
@@ -156,6 +162,36 @@ bool OCVProc::isQuad(std::vector<cv::Point> contours)
 	if (mincos >= -0.3 && maxcos <= 0.3)
 		return true;
 	return false;
+}
+
+
+
+void OCVProc::removeDoubleQuads(std::vector<std::vector<cv::Point>>& quads)
+{
+	double currentQuadSize = 0;
+	double compareQuadSize = 0;
+	cv::Point currentQuadCenter;
+	cv::Point compareQuadCenter;
+	for (int i = 0; i < quads.size(); i++)
+	{
+		currentQuadSize = cv::contourArea(quads[i]);		//information of current quad to find similar quads
+		cv::Point currentQuadCenter = quadCenter(quads[i]);
+		for (int j = i + 1; j < quads.size(); j++)
+		{
+			compareQuadSize = cv::contourArea(quads[j]);	//compare with current quad
+			compareQuadCenter = quadCenter(quads[j]);		//if similar,delete comparequad
+			double maxSize = std::max(compareQuadSize, currentQuadSize);
+			double minSize = std::min(compareQuadSize, currentQuadSize);
+			double hypothenuse = sqrt(
+					pow(currentQuadCenter.x - compareQuadCenter.x, 2) +
+					pow(currentQuadCenter.y - compareQuadCenter.y, 2));
+			if ((maxSize / minSize) < 1.4 && hypothenuse < 60)
+			{
+				j--;
+				quads.erase(quads.begin()+j);
+			}
+		}
+	}
 }
 
 void OCVProc::setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour)
