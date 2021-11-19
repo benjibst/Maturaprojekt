@@ -95,6 +95,7 @@ void OCVProc::ProcessImage()
 	std::vector<std::vector<cv::Point>> contours;
 	std::vector<cv::Point> currentPoly;		//angenäherte polygone
 	std::vector<std::vector<cv::Point>> allQuad;		//angenäherte polygone
+	std::vector<cv::Point> outerQuad;
 
 	cv::cvtColor(afterTransform, gray, cv::COLOR_BGR2GRAY);
 	cv::GaussianBlur(gray, gauss, cv::Size(5, 5), 0);
@@ -103,23 +104,71 @@ void OCVProc::ProcessImage()
 	cv::findContours(canny, contours, cv::RETR_LIST, cv::CHAIN_APPROX_TC89_KCOS);
 
 	framePostProc = afterTransform.clone();
-
-	currentPoly.resize(contours.size());
 	for (int i = 0; i < contours.size(); i++)
 	{
 		// Approximate contour with accuracy proportional
 		// to the contour perimeter
-		cv::approxPolyDP(cv::Mat(contours[i]), currentPoly, cv::arcLength(cv::Mat(contours[i]), true) * 0.12, true);
+		cv::approxPolyDP(cv::Mat(contours[i]), currentPoly, cv::arcLength(cv::Mat(contours[i]), true) * 0.08, true);
 		if (isQuad(currentPoly))
 			allQuad.push_back(currentPoly);
 	}
 	removeDoubleQuads(allQuad);
+	outerQuad = biggestQuad(allQuad);
 	for (int i = 0; i < allQuad.size(); i++)
-	{
-		setLabel(framePostProc, "RECT", allQuad[i]);
 		cv::polylines(framePostProc, allQuad[i], true, cv::Scalar(0, 0, 255), 2);
+	sortCorners(outerQuad);
+	cv::circle(framePostProc, outerQuad[0], 5, cv::Scalar(255, 0, 0), 4);
+	cv::circle(framePostProc, outerQuad[1], 5, cv::Scalar(0, 255, 0), 4);
+	cv::circle(framePostProc, outerQuad[2], 5, cv::Scalar(0, 0, 255), 4);
+	cv::polylines(framePostProc, outerQuad, true, cv::Scalar(0, 255, 0), 2);
+	cv::Mat transformation = cv::findHomography(outerQuad, transformPoints);
+	cv::Mat transformedImg;
+	cv::warpPerspective(framePostProc, transformedImg, transformation,cv::Size(256,256));
+	drawMatToDC(transformedImg);
+}
+
+void OCVProc::sortCorners(std::vector<cv::Point>& corners)
+{
+	assert(corners.size() == 4);
+	int cornerIndices[4]{ 0 };
+	double distances[4]{ 0 };
+	cv::Rect bounding= cv::boundingRect(corners);
+	cv::Point cornerPoints[4] = {
+		cv::Point(bounding.x,bounding.y),
+		cv::Point(bounding.x+bounding.width,bounding.y),
+		cv::Point(bounding.x+bounding.width,bounding.y + bounding.height),
+		cv::Point(bounding.x,bounding.y+bounding.height)
+	}; //corners of boundingrect
+	for (int i = 0; i < _countof(cornerPoints); i++)
+	{
+		for (int j = 0; j < corners.size(); j++)
+			distances[j] = cv::norm(corners[j] - cornerPoints[i]);
+		cornerIndices[i] = std::distance(
+			distances,
+			std::min_element(distances,
+			distances + _countof(distances)));
 	}
-	drawMatToDC(framePostProc);
+	std::vector<cv::Point> cornerstemp(corners);
+	corners.clear();
+	for (int i = 0; i < 4; i++)
+		corners.push_back(cornerstemp[cornerIndices[i]]);
+}
+
+std::vector<cv::Point> OCVProc::biggestQuad(std::vector<std::vector<cv::Point>>& quads)
+{
+	assert(quads.size() > 0);
+	std::vector<cv::Point> biggestQuad = quads[0];
+	int index = 0;
+	for (size_t i = 0; i < quads.size(); i++)
+	{
+		if (cv::contourArea(quads[i]) > cv::contourArea(biggestQuad))
+		{
+			biggestQuad = quads[i];
+			index = i;
+		}
+	}
+	quads.erase(quads.begin() + index);
+	return biggestQuad;
 }
 
 void OCVProc::mirrorStream() { mirror = !mirror; }
@@ -159,7 +208,7 @@ bool OCVProc::isQuad(std::vector<cv::Point> contours)
 
 	// Use the degrees obtained above and the number of vertices
 	// to determine the shape of the contour
-	if (mincos >= -0.3 && maxcos <= 0.3)
+	if (mincos >= -0.4 && maxcos <= 0.4)
 		return true;
 	return false;
 }
@@ -182,13 +231,11 @@ void OCVProc::removeDoubleQuads(std::vector<std::vector<cv::Point>>& quads)
 			compareQuadCenter = quadCenter(quads[j]);		//if similar,delete comparequad
 			double maxSize = std::max(compareQuadSize, currentQuadSize);
 			double minSize = std::min(compareQuadSize, currentQuadSize);
-			double hypothenuse = sqrt(
-					pow(currentQuadCenter.x - compareQuadCenter.x, 2) +
-					pow(currentQuadCenter.y - compareQuadCenter.y, 2));
+			double hypothenuse = cv::norm(currentQuadCenter - compareQuadCenter);
 			if ((maxSize / minSize) < 1.4 && hypothenuse < 60)
 			{
 				j--;
-				quads.erase(quads.begin()+j);
+				quads.erase(quads.begin() + j);
 			}
 		}
 	}

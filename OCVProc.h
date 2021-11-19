@@ -11,17 +11,23 @@
 #include <wx/wx.h>
 #endif
 
-#define defaultIP "http://192.168.x.x:4747/video"
+constexpr auto defaultIP = "http://192.168.x.x:4747/video";
 
 class OCVProc
 {
 private:
+	std::vector<cv::Point> transformPoints = {
+		cv::Point(0,0),
+		cv::Point(255,0),
+		cv::Point(255,255),
+		cv::Point(0,255)
+	};
 	HDC drawingDC = 0;
 	wxPanel* streamCanvas = nullptr;
 	bool stream = false;
 	bool mirror = false;
 	int rotation = 3;
-	cv::Mat framePreProc,afterTransform, framePostProc;
+	cv::Mat framePreProc,afterTransform, framePostProc,fieldAligned;
 	cv::Size cameraRes;
 	cv::VideoCapture camera;
 	std::thread cameraStream;
@@ -45,6 +51,8 @@ public:
 	void StartCameraStream();
 	void StopCameraStream();
 	void ProcessImage();
+	void sortCorners(std::vector<cv::Point>& corners);
+	std::vector<cv::Point> biggestQuad(std::vector<std::vector<cv::Point>>& quads);
 	OCVProc();
 	~OCVProc();
 };
