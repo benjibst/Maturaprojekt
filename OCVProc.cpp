@@ -6,7 +6,7 @@ void OCVProc::InitCameraRes()
 	cameraRes.height = camera.get(cv::CAP_PROP_FRAME_HEIGHT);
 }
 
-cv::Point OCVProc::quadCenter(std::vector<cv::Point> corners)
+cv::Point2f OCVProc::quadCenter(std::vector<cv::Point> corners)
 {
 	assert(corners.size() == 4);
 	int avgX = 0, avgY = 0;
@@ -15,7 +15,7 @@ cv::Point OCVProc::quadCenter(std::vector<cv::Point> corners)
 		avgX += corners[i].x;
 		avgY += corners[i].y;
 	}
-	return cv::Point(avgX / 4, avgY / 4);
+	return cv::Point2f(avgX / 4.0F, avgY / 4.0F);
 }
 
 void OCVProc::SetStreamCanvas(wxPanel* canvas)
@@ -96,6 +96,8 @@ void OCVProc::ProcessImage()
 	std::vector<cv::Point> currentPoly;		//angenäherte polygone
 	std::vector<std::vector<cv::Point>> allQuad;		//angenäherte polygone
 	std::vector<cv::Point> outerQuad;
+	std::vector<cv::Point2f> outerQuadf;
+	std::vector<cv::Point2f> QuadCenters;
 
 	cv::cvtColor(afterTransform, gray, cv::COLOR_BGR2GRAY);
 	cv::GaussianBlur(gray, gauss, cv::Size(5, 5), 0);
@@ -113,17 +115,29 @@ void OCVProc::ProcessImage()
 			allQuad.push_back(currentPoly);
 	}
 	removeDoubleQuads(allQuad);
-	outerQuad = biggestQuad(allQuad);
+	outerQuad = removeBiggestQuad(allQuad);
 	for (int i = 0; i < allQuad.size(); i++)
 		cv::polylines(framePostProc, allQuad[i], true, cv::Scalar(0, 0, 255), 2);
-	sortCorners(outerQuad);
+	sortCorners(outerQuad);/*
 	cv::circle(framePostProc, outerQuad[0], 5, cv::Scalar(255, 0, 0), 4);
 	cv::circle(framePostProc, outerQuad[1], 5, cv::Scalar(0, 255, 0), 4);
-	cv::circle(framePostProc, outerQuad[2], 5, cv::Scalar(0, 0, 255), 4);
+	cv::circle(framePostProc, outerQuad[2], 5, cv::Scalar(0, 0, 255), 4);*/
 	cv::polylines(framePostProc, outerQuad, true, cv::Scalar(0, 255, 0), 2);
-	cv::Mat transformation = cv::findHomography(outerQuad, transformPoints);
+	cv::Mat(outerQuad).convertTo(outerQuadf, CV_32F);
+	cv::Mat transformation = cv::getPerspectiveTransform(outerQuadf, transformPoints);
 	cv::Mat transformedImg;
-	cv::warpPerspective(framePostProc, transformedImg, transformation,cv::Size(256,256));
+	cv::warpPerspective(framePostProc, transformedImg, transformation, cv::Size(480, 480));
+	for (int i = 0; i < allQuad.size(); i++)
+	{
+		QuadCenters.push_back(quadCenter(allQuad[i]));
+	}
+	std::vector<cv::Point2f> transformedCenters;
+	cv::perspectiveTransform(QuadCenters,QuadCenters,transformation);
+	for (int i = 0; i < QuadCenters.size(); i++)
+	{
+		cv::circle(transformedImg, QuadCenters[i], 5, cv::Scalar(255, 0, 0), 4);
+	}
+	streamCanvas->ClearBackground();
 	drawMatToDC(transformedImg);
 }
 
@@ -132,12 +146,12 @@ void OCVProc::sortCorners(std::vector<cv::Point>& corners)
 	assert(corners.size() == 4);
 	int cornerIndices[4]{ 0 };
 	double distances[4]{ 0 };
-	cv::Rect bounding= cv::boundingRect(corners);
+	cv::Rect bounding = cv::boundingRect(corners);
 	cv::Point cornerPoints[4] = {
 		cv::Point(bounding.x,bounding.y),
-		cv::Point(bounding.x+bounding.width,bounding.y),
-		cv::Point(bounding.x+bounding.width,bounding.y + bounding.height),
-		cv::Point(bounding.x,bounding.y+bounding.height)
+		cv::Point(bounding.x + bounding.width,bounding.y),
+		cv::Point(bounding.x + bounding.width,bounding.y + bounding.height),
+		cv::Point(bounding.x,bounding.y + bounding.height)
 	}; //corners of boundingrect
 	for (int i = 0; i < _countof(cornerPoints); i++)
 	{
@@ -146,7 +160,7 @@ void OCVProc::sortCorners(std::vector<cv::Point>& corners)
 		cornerIndices[i] = std::distance(
 			distances,
 			std::min_element(distances,
-			distances + _countof(distances)));
+				distances + _countof(distances)));
 	}
 	std::vector<cv::Point> cornerstemp(corners);
 	corners.clear();
@@ -154,7 +168,7 @@ void OCVProc::sortCorners(std::vector<cv::Point>& corners)
 		corners.push_back(cornerstemp[cornerIndices[i]]);
 }
 
-std::vector<cv::Point> OCVProc::biggestQuad(std::vector<std::vector<cv::Point>>& quads)
+std::vector<cv::Point> OCVProc::removeBiggestQuad(std::vector<std::vector<cv::Point>>& quads)
 {
 	assert(quads.size() > 0);
 	std::vector<cv::Point> biggestQuad = quads[0];

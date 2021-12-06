@@ -12,15 +12,14 @@
 #endif
 
 constexpr auto defaultIP = "http://192.168.x.x:4747/video";
-
 class OCVProc
 {
 private:
-	std::vector<cv::Point> transformPoints = {
+	std::vector<cv::Point2f> transformPoints = {
 		cv::Point(0,0),
-		cv::Point(255,0),
-		cv::Point(255,255),
-		cv::Point(0,255)
+		cv::Point(480,0),
+		cv::Point(480,480),
+		cv::Point(0,480)
 	};
 	HDC drawingDC = 0;
 	wxPanel* streamCanvas = nullptr;
@@ -40,7 +39,7 @@ private:
 	void setLabelAtPoint(cv::Mat& im, const std::string label, cv::Point point);
 	void drawMatToDC(cv::Mat& mat);
 public:
-	static cv::Point quadCenter(std::vector<cv::Point> corners);
+	static cv::Point2f quadCenter(std::vector<cv::Point> corners);
 	void SetStreamCanvas(wxPanel* canvas);
 	bool OpenCamera(int selectedCameraIndex);
 	bool OpenCamera(std::string cameraIP);
@@ -52,7 +51,7 @@ public:
 	void StopCameraStream();
 	void ProcessImage();
 	void sortCorners(std::vector<cv::Point>& corners);
-	std::vector<cv::Point> biggestQuad(std::vector<std::vector<cv::Point>>& quads);
+	std::vector<cv::Point> removeBiggestQuad(std::vector<std::vector<cv::Point>>& quads);
 	OCVProc();
 	~OCVProc();
 };
