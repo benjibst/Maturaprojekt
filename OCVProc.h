@@ -15,7 +15,7 @@ constexpr auto defaultIP = "http://192.168.x.x:4747/video";
 class OCVProc
 {
 private:
-	std::vector<cv::Point2f> transformPoints = {
+	const std::vector<cv::Point2f> transformPoints = {
 		cv::Point(0,0),
 		cv::Point(480,0),
 		cv::Point(480,480),

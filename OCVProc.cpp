@@ -98,18 +98,17 @@ void OCVProc::ProcessImage()
 	std::vector<cv::Point> outerQuad;
 	std::vector<cv::Point2f> outerQuadf;
 	std::vector<cv::Point2f> QuadCenters;
+	std::vector<cv::Point2f> transformedCenters;
 
+	framePostProc = afterTransform.clone();
 	cv::cvtColor(afterTransform, gray, cv::COLOR_BGR2GRAY);
 	cv::GaussianBlur(gray, gauss, cv::Size(5, 5), 0);
 	// Use Canny instead of threshold to catch squares with gradient shading
 	cv::Canny(gauss, canny, 100, 200);
 	cv::findContours(canny, contours, cv::RETR_LIST, cv::CHAIN_APPROX_TC89_KCOS);
 
-	framePostProc = afterTransform.clone();
 	for (int i = 0; i < contours.size(); i++)
 	{
-		// Approximate contour with accuracy proportional
-		// to the contour perimeter
 		cv::approxPolyDP(cv::Mat(contours[i]), currentPoly, cv::arcLength(cv::Mat(contours[i]), true) * 0.08, true);
 		if (isQuad(currentPoly))
 			allQuad.push_back(currentPoly);
@@ -118,10 +117,8 @@ void OCVProc::ProcessImage()
 	outerQuad = removeBiggestQuad(allQuad);
 	for (int i = 0; i < allQuad.size(); i++)
 		cv::polylines(framePostProc, allQuad[i], true, cv::Scalar(0, 0, 255), 2);
-	sortCorners(outerQuad);/*
-	cv::circle(framePostProc, outerQuad[0], 5, cv::Scalar(255, 0, 0), 4);
-	cv::circle(framePostProc, outerQuad[1], 5, cv::Scalar(0, 255, 0), 4);
-	cv::circle(framePostProc, outerQuad[2], 5, cv::Scalar(0, 0, 255), 4);*/
+
+	sortCorners(outerQuad);
 	cv::polylines(framePostProc, outerQuad, true, cv::Scalar(0, 255, 0), 2);
 	cv::Mat(outerQuad).convertTo(outerQuadf, CV_32F);
 	cv::Mat transformation = cv::getPerspectiveTransform(outerQuadf, transformPoints);
@@ -131,7 +128,6 @@ void OCVProc::ProcessImage()
 	{
 		QuadCenters.push_back(quadCenter(allQuad[i]));
 	}
-	std::vector<cv::Point2f> transformedCenters;
 	cv::perspectiveTransform(QuadCenters,QuadCenters,transformation);
 	for (int i = 0; i < QuadCenters.size(); i++)
 	{

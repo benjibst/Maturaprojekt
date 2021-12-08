@@ -35,22 +35,19 @@ void MainFrame::btnMirrorClicked(wxCommandEvent &event)
 	ocvProc->mirrorStream();
 }
 
-
 bool MainFrame::SelectCameraDialog()
 {
 	std::string deviceIP;
 	int selectedDeviceID;
 	std::vector<wchar_t*> deviceNames;
-	HRESULT result = Helpers::getVideoDeviceNames(deviceNames);
-	if (result != S_OK || deviceNames.size() == 0)
-	{
-		if (EnterCameraIP(this, deviceIP) == wxID_OK)
-			return ocvProc->OpenCamera(deviceIP);
-	}
-	if (SelectString(this, deviceNames, selectedDeviceID) == wxID_OK)
-		return ocvProc->OpenCamera(selectedDeviceID);
 	if (EnterCameraIP(this, deviceIP) == wxID_OK)
 		return ocvProc->OpenCamera(deviceIP);
+	HRESULT result = Helpers::getVideoDeviceNames(deviceNames);
+	if (result == S_OK || deviceNames.size() > 0)
+	{
+		if (SelectString(this, deviceNames,selectedDeviceID) == wxID_OK)
+			return ocvProc->OpenCamera(selectedDeviceID);
+	}
 	return false;
 }
 
@@ -81,8 +78,8 @@ wxStandardID MainFrame::EnterCameraIP(wxWindow *parent, std::string &ip)
 	{
 		ofile.clear();
 		ofile<<ip;
+		ofile.close();
 	}
-	ofile.close();
 	delete enterIP;
 	return dialogResult;
 }
