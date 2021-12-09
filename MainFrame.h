@@ -1,6 +1,7 @@
 #pragma once
 #include "Helpers.h"
 #include "OCVProc.h"
+#include "SerialPort.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -20,6 +21,7 @@ class MainFrame : public wxFrame
 	wxButton *btnRotate;
 	wxButton *btnMirror;
 	OCVProc *ocvProc;
+	SerialPort* serialPort;
 	wxStandardID EnterCameraIP(wxWindow *parent, std::string &ip);
 	wxStandardID SelectString(wxWindow *parent, std::vector<wchar_t *> strings, int &index);
 	void InitUI(wxSize size,wxSize cameraRes);

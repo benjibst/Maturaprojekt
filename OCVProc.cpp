@@ -102,7 +102,7 @@ void OCVProc::ProcessImage()
 
 	framePostProc = afterTransform.clone();
 	cv::cvtColor(afterTransform, gray, cv::COLOR_BGR2GRAY);
-	cv::GaussianBlur(gray, gauss, cv::Size(5, 5), 0);
+	cv::GaussianBlur(gray, gauss, cv::Size(7, 7), 0);
 	// Use Canny instead of threshold to catch squares with gradient shading
 	cv::Canny(gauss, canny, 100, 200);
 	cv::findContours(canny, contours, cv::RETR_LIST, cv::CHAIN_APPROX_TC89_KCOS);
@@ -139,7 +139,8 @@ void OCVProc::ProcessImage()
 
 void OCVProc::sortCorners(std::vector<cv::Point>& corners)
 {
-	assert(corners.size() == 4);
+	if (corners.size() != 4)
+		return;
 	int cornerIndices[4]{ 0 };
 	double distances[4]{ 0 };
 	cv::Rect bounding = cv::boundingRect(corners);
@@ -166,7 +167,8 @@ void OCVProc::sortCorners(std::vector<cv::Point>& corners)
 
 std::vector<cv::Point> OCVProc::removeBiggestQuad(std::vector<std::vector<cv::Point>>& quads)
 {
-	assert(quads.size() > 0);
+	if (quads.size() == 0)
+		return std::vector<cv::Point>();
 	std::vector<cv::Point> biggestQuad = quads[0];
 	int index = 0;
 	for (size_t i = 0; i < quads.size(); i++)

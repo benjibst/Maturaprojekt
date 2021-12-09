@@ -3,6 +3,12 @@ MainFrame::MainFrame(const wxString &title, const wxSize &size)
 	: wxFrame(0, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER))
 {
 	ocvProc = new OCVProc();
+	serialPort = new SerialPort();
+	int h = serialPort->Open(std::string());
+	serialPort->WriteLine(std::string());
+	std::string str = serialPort->ReadLine();
+	serialPort->Close();
+	delete serialPort;
 	cameraFound = SelectCameraDialog();
 	if (cameraFound)
 	{
