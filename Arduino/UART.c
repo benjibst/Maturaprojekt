@@ -33,8 +33,7 @@ void _gets(char* st)
     do
     {
         *st=_getch();
-    } while (*st++!=10);  // die Funktion WriteLine von C# schickt einen String,
-    *--st=0;			  // der mit New Line (\n, ASCII: 10) abschlossen ist.
+    } while (*st++);  // die Funktion WriteLine von C# schickt einen String,
 }
 
 void _newline()

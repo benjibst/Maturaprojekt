@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 
-char strcmd[6];
-
+char strcmd[9];
+int points=0;
 //LED PB5
 
 ISR(USART_RX_vect)
@@ -15,12 +15,13 @@ ISR(USART_RX_vect)
 	SREG&=~(1<<7);
 	DDRB |= 1<<5;
 	PORTB |=1<<5;
-	_gets(strcmd);
-	strcmd[0]= 'a';
-	strcmd[1]='a';
-	strcmd[2]=0;
+	points = _getch();
+	for(int i=0;i<2*points;i++)
+	{
+		strcmd[i]=_getch();
+	}
+	strcmd[8]=0;
 	_puts(strcmd);
-	_newline();
 	SREG = sreg;
 }
 int main(void)

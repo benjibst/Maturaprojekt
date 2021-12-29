@@ -89,52 +89,67 @@ void OCVProc::previewLoop()
 	}
 }
 
-void OCVProc::ProcessImage()
+std::vector<std::vector<cv::Point>> OCVProc::FindQuadsInMat(cv::Mat& mat)
 {
 	cv::Mat gray, gauss, canny;
 	std::vector<std::vector<cv::Point>> contours;
-	std::vector<cv::Point> currentPoly;		//angenäherte polygone
+	std::vector<cv::Point> currentPoly;
 	std::vector<std::vector<cv::Point>> allQuad;		//angenäherte polygone
-	std::vector<cv::Point> outerQuad;
-	std::vector<cv::Point2f> outerQuadf;
-	std::vector<cv::Point2f> QuadCenters;
-	std::vector<cv::Point2f> transformedCenters;
 
-	framePostProc = afterTransform.clone();
-	cv::cvtColor(afterTransform, gray, cv::COLOR_BGR2GRAY);
-	cv::GaussianBlur(gray, gauss, cv::Size(7, 7), 0);
+	cv::cvtColor(mat, gray, cv::COLOR_BGR2GRAY);
+	cv::GaussianBlur(gray, gauss, cv::Size(3, 3), 0);
 	// Use Canny instead of threshold to catch squares with gradient shading
 	cv::Canny(gauss, canny, 100, 200);
 	cv::findContours(canny, contours, cv::RETR_LIST, cv::CHAIN_APPROX_TC89_KCOS);
 
 	for (int i = 0; i < contours.size(); i++)
 	{
-		cv::approxPolyDP(cv::Mat(contours[i]), currentPoly, cv::arcLength(cv::Mat(contours[i]), true) * 0.08, true);
+		cv::approxPolyDP(cv::Mat(contours[i]), currentPoly, cv::arcLength(cv::Mat(contours[i]), true) * 0.12, true);
 		if (isQuad(currentPoly))
 			allQuad.push_back(currentPoly);
 	}
-	removeDoubleQuads(allQuad);
+	return allQuad;
+}
+
+std::vector<cv::Point2f> OCVProc::ProcessImage()
+{
+	std::vector<std::vector<cv::Point>> allQuad;
+	std::vector<cv::Point> outerQuad;
+	std::vector<cv::Point2f> outerQuadf;
+	std::vector<cv::Point2f> QuadCenters;
+	std::vector<cv::Point2f> transformedCentersMCU; //punkte werden auf 1 byte skaliert für UART Übertragung
+	std::vector<cv::Point2f> transformedCentersIMG;
+	cv::Mat transformationIMG;
+	cv::Mat transformationMCU;
+	cv::Mat transformedImg;
+
+	framePostProc = afterTransform.clone();
+	allQuad = FindQuadsInMat(afterTransform);
+
+	if (allQuad.size() < 2)
+		goto end;
+
 	outerQuad = removeBiggestQuad(allQuad);
+	removeDoubleQuads(allQuad);
 	for (int i = 0; i < allQuad.size(); i++)
-		cv::polylines(framePostProc, allQuad[i], true, cv::Scalar(0, 0, 255), 2);
+		QuadCenters.push_back(quadCenter(allQuad[i]));
 
 	sortCorners(outerQuad);
-	cv::polylines(framePostProc, outerQuad, true, cv::Scalar(0, 255, 0), 2);
 	cv::Mat(outerQuad).convertTo(outerQuadf, CV_32F);
-	cv::Mat transformation = cv::getPerspectiveTransform(outerQuadf, transformPoints);
-	cv::Mat transformedImg;
-	cv::warpPerspective(framePostProc, transformedImg, transformation, cv::Size(480, 480));
-	for (int i = 0; i < allQuad.size(); i++)
-	{
-		QuadCenters.push_back(quadCenter(allQuad[i]));
-	}
-	cv::perspectiveTransform(QuadCenters,QuadCenters,transformation);
+	transformationIMG = cv::getPerspectiveTransform(outerQuadf, transformPointsIMG);
+	transformationMCU = cv::getPerspectiveTransform(outerQuadf, transformPointsMCU);
+
+	cv::warpPerspective(framePostProc, transformedImg, transformationIMG, cv::Size(480, 480));
+	
+	cv::perspectiveTransform(QuadCenters, transformedCentersIMG, transformationIMG);
+	cv::perspectiveTransform(QuadCenters, transformedCentersMCU, transformationMCU);
+
 	for (int i = 0; i < QuadCenters.size(); i++)
-	{
-		cv::circle(transformedImg, QuadCenters[i], 5, cv::Scalar(255, 0, 0), 4);
-	}
+		cv::circle(transformedImg, transformedCentersIMG[i], 5, cv::Scalar(255, 0, 0), 4);
+end:
 	streamCanvas->ClearBackground();
 	drawMatToDC(transformedImg);
+	return transformedCentersMCU;
 }
 
 void OCVProc::sortCorners(std::vector<cv::Point>& corners)
@@ -246,8 +261,8 @@ void OCVProc::removeDoubleQuads(std::vector<std::vector<cv::Point>>& quads)
 			double hypothenuse = cv::norm(currentQuadCenter - compareQuadCenter);
 			if ((maxSize / minSize) < 1.4 && hypothenuse < 60)
 			{
-				j--;
 				quads.erase(quads.begin() + j);
+				j--;
 			}
 		}
 	}

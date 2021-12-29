@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <string>
-#include <thread>
+#include <vector>
 class SerialPort
 {
 private:
@@ -9,11 +9,13 @@ private:
 	DCB serialParams;
 	COMMTIMEOUTS commTimeOuts;
 	bool open = false;
-	const char* portname = "\\\\.\\COM";
 public:
-	int Open(std::string Port);
-	void WriteLine(std::string data);
-	std::string ReadLine();
+	bool OpenPort(std::string portName);
+	bool OpenPort(unsigned long portIndex);
+	bool SetSerialParams();
+	bool Write(unsigned char* data,int length);
+	std::string Read();
+	static std::vector<unsigned long> FindAvailableComPorts();
 	void Close();
 };
 

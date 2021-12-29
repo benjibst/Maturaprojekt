@@ -33,13 +33,14 @@ HRESULT Helpers::getVideoDeviceNames(std::vector<wchar_t*>& deviceNames)
 	for (UINT32 i = 0; i < videoDevicesCount; i++)
 	{
 		result = pMFVideoDevicesArray[i]->GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME, &deviceName, &nameLength);
-		
+
 		deviceNames.push_back(deviceName);
 	}
 	SafeRelease(&pAttributes);
 	for (unsigned int i = 0; i < videoDevicesCount; i++)
 		SafeRelease(&pMFVideoDevicesArray[i]);
 	CoTaskMemFree(pMFVideoDevicesArray);
+
 	return result;
 }
 

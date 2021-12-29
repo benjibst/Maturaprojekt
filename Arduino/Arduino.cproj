@@ -28,7 +28,7 @@
     <ResetRule>0</ResetRule>
     <eraseonlaunchrule>0</eraseonlaunchrule>
     <EraseKey />
-    <avrtool>custom</avrtool>
+    <avrtool>com.atmel.avrdbg.tool.simulator</avrtool>
     <avrtoolserialnumber />
     <avrdeviceexpectedsignature>0x1E950F</avrdeviceexpectedsignature>
     <com_atmel_avrdbg_tool_simulator>
@@ -57,7 +57,8 @@
       <ToolName xmlns="">Custom Programming Tool</ToolName>
     </custom>
     <CustomProgrammingToolTimeout>10</CustomProgrammingToolTimeout>
-    <CustomProgrammingToolCommand>avrdude -C"C:\Program Files\avrdude\avrdude.conf" -v -patmega328p -carduino -PCOM5 -b115200 -D -Uflash:w:C:C:\CPP\Maturaprojekt\Arduino\Debug\Arduino.hex:i </CustomProgrammingToolCommand>
+    <CustomProgrammingToolCommand>
+    </CustomProgrammingToolCommand>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
