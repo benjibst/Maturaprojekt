@@ -1,20 +1,11 @@
 #include "MainFrame.h"
-MainFrame::MainFrame(const wxString& title, const wxSize& size)
+MainFrame::MainFrame(const wxString& title, const wxSize& size, OCVProc* ocvObj, MCUConn* serialObj)
 	: wxFrame(0, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER))
 {
-	ocvProc = new OCVProc();
-	serialPort = new SerialPort();
-	std::vector<unsigned long> ports = SerialPort::FindAvailableComPorts();
-	if (ports.size() != 0&& SelectCOMPort(ports))
-		serialPort->OpenPort(selectedCOMPort);
-
-	cameraFound = SelectCameraDialog();
-	if (cameraFound)
-	{
-		InitUI(size, ocvProc->GetCameraResolution());
-		ocvProc->SetStreamCanvas(streamContainer);
-		ocvProc->StartCameraStream();
-	}
+	serialPort = serialObj;
+	ocvProc = ocvObj;
+	InitUI(size, ocvProc->GetCameraResolution());
+	ocvProc->SetStreamCanvas(streamContainer);
 }
 void MainFrame::btnCaptureClicked(wxCommandEvent& event)
 {
@@ -22,6 +13,10 @@ void MainFrame::btnCaptureClicked(wxCommandEvent& event)
 	{
 		ocvProc->StopCameraStream();
 		std::vector<cv::Point2f> points = ocvProc->ProcessImage();
+		serialPort->SendCoordData(points);
+		unsigned char str[9];
+		DWORD read;
+		serialPort->Read(str, 9, &read);
 		btnCapture->SetLabel(wxString("Restart"));
 	}
 	else
@@ -38,90 +33,6 @@ void MainFrame::btnRotateClicked(wxCommandEvent& event)
 void MainFrame::btnMirrorClicked(wxCommandEvent& event)
 {
 	ocvProc->mirrorStream();
-}
-
-bool MainFrame::SelectCameraDialog()
-{
-	std::string deviceIP;
-	int selectedDeviceID;
-	std::vector<wchar_t*> deviceNames;
-
-	if (EnterCameraIP(this, deviceIP) == wxID_OK)
-		return ocvProc->OpenCamera(deviceIP);
-
-	HRESULT result = Helpers::getVideoDeviceNames(deviceNames);
-	if (result != S_OK || deviceNames.size() == 0)
-		return false;
-
-	if (SelectString(this, deviceNames, selectedDeviceID) == wxID_OK)
-		return ocvProc->OpenCamera(selectedDeviceID);
-	return false;
-}
-
-wxStandardID MainFrame::EnterCameraIP(wxWindow* parent, std::string& ip)
-{
-	std::string cameraIP;
-	std::ifstream ifile;
-	std::ofstream ofile;
-	wxTextEntryDialog* enterIP;
-	ifile.open("ip.txt");
-	if (ifile.is_open())
-	{
-		std::getline(ifile, cameraIP);
-		if (cameraIP.length() == 0)
-			cameraIP = defaultIP;
-	}
-	else
-	{
-		std::ofstream{ "ip.txt" };
-		cameraIP = defaultIP;
-	}
-	enterIP = new wxTextEntryDialog(parent, wxString(""), wxString("Enter camera IP"), wxString(cameraIP));
-	ifile.close();
-	wxStandardID dialogResult = (wxStandardID)enterIP->ShowModal();
-	ip = std::string(enterIP->GetValue());
-	ofile.open("ip.txt");
-	if (ofile.is_open())
-	{
-		ofile.clear();
-		ofile << ip;
-		ofile.close();
-	}
-	delete enterIP;
-	return dialogResult;
-}
-
-wxStandardID MainFrame::SelectString(wxWindow* parent, wxArrayString deviceDisplayNamesAS, int& index)
-{
-	wxSingleChoiceDialog* selectString = new wxSingleChoiceDialog(parent, wxString(""), wxString("Pick device"), deviceDisplayNamesAS);
-	wxStandardID dialogResult = (wxStandardID)selectString->ShowModal();
-	index = dialogResult == wxID_OK ? selectString->GetSelection() : -1;
-	delete selectString;
-	return dialogResult;
-}
-
-wxStandardID MainFrame::SelectString(wxWindow* parent, std::vector<wchar_t*> strings, int& index)
-{
-	wxArrayString deviceDisplayNamesAS(strings.size(), (const wchar_t**)strings.data());
-	return SelectString(parent, deviceDisplayNamesAS, index);
-}
-
-bool MainFrame::SelectCOMPort(std::vector<unsigned long> ports)
-{
-	int selectedIndex = 0;
-	wxArrayString portNames;
-	for (auto i : ports)
-	{
-		wxString name("COM");
-		name += std::to_string(i);
-		portNames.Add(name);
-	}
-	if (SelectString(this, portNames, selectedIndex) == wxID_OK)
-	{
-		selectedCOMPort = portNames[selectedIndex];
-		return true;
-	}
-	return false;
 }
 
 void MainFrame::InitUI(wxSize size, wxSize cameraRes)
@@ -146,10 +57,6 @@ void MainFrame::InitUI(wxSize size, wxSize cameraRes)
 	btnMirror->Bind(wxEVT_BUTTON, &MainFrame::btnMirrorClicked, this);
 }
 
-bool MainFrame::CameraFound() { return cameraFound; }
-
 MainFrame::~MainFrame()
 {
-	ocvProc->StopCameraStream();
-	delete ocvProc;
 }

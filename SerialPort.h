@@ -2,19 +2,22 @@
 #include <Windows.h>
 #include <string>
 #include <vector>
-class SerialPort
+#include "CoordParams.h"
+
+class MCUConn
 {
 private:
 	HANDLE hSerial;
 	DCB serialParams;
 	COMMTIMEOUTS commTimeOuts;
 	bool open = false;
-public:
-	bool OpenPort(std::string portName);
-	bool OpenPort(unsigned long portIndex);
 	bool SetSerialParams();
-	bool Write(unsigned char* data,int length);
-	std::string Read();
+public:
+	bool OpenPort(char* portName);
+	bool OpenPort(unsigned long portIndex);
+	bool WriteData(unsigned char* data,int length);
+	bool Read(unsigned char* buf, int nobtr, DWORD* bytesRead);
+	bool SendCoordData(std::vector<cv::Point2f>& points);
 	static std::vector<unsigned long> FindAvailableComPorts();
 	void Close();
 };

@@ -10,7 +10,6 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-
 constexpr auto defaultIP = "http://192.168.x.x:4747/video";
 
 class OCVProc
@@ -52,6 +51,7 @@ public:
 	bool OpenCamera(int selectedCameraIndex);
 	bool OpenCamera(std::string cameraIP);
 	bool IsStreaming();
+	bool IsOpen();
 	wxSize GetCameraResolution();
 	void rotateStream();
 	void mirrorStream();

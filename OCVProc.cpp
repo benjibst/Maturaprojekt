@@ -51,6 +51,11 @@ bool OCVProc::IsStreaming()
 	return stream;
 }
 
+bool OCVProc::IsOpen()
+{
+	return camera.isOpened();
+}
+
 wxSize OCVProc::GetCameraResolution()
 {
 	return wxSize(cameraRes.width, cameraRes.height);
@@ -129,8 +134,8 @@ std::vector<cv::Point2f> OCVProc::ProcessImage()
 	if (allQuad.size() < 2)
 		goto end;
 
-	outerQuad = removeBiggestQuad(allQuad);
 	removeDoubleQuads(allQuad);
+	outerQuad = removeBiggestQuad(allQuad);
 	for (int i = 0; i < allQuad.size(); i++)
 		QuadCenters.push_back(quadCenter(allQuad[i]));
 

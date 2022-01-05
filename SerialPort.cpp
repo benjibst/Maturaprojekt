@@ -1,44 +1,30 @@
 #include "SerialPort.h"
 #include <vector>
+#include <array>
 
-bool SerialPort::OpenPort(std::string portName)
+bool MCUConn::OpenPort(char* portName)
 {
-	hSerial = CreateFileA(portName.c_str(),
-		GENERIC_READ | GENERIC_WRITE, 0, NULL,
-		OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL, NULL);
-
-	if (hSerial == INVALID_HANDLE_VALUE)
-	{
-		if (GetLastError() == ERROR_FILE_NOT_FOUND)
-			return false;
-		return false;
-	}
-	SetSerialParams();
-	return true;
-}
-bool SerialPort::OpenPort(unsigned long portIndex)
-{
-	char portName[5] = "COM";
-	portName[3] = (char)portIndex + 48;
-	portName[4] = 0;
-
 	hSerial = CreateFileA(portName,
 		GENERIC_READ | GENERIC_WRITE, 0, NULL,
 		OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (hSerial == INVALID_HANDLE_VALUE)
-	{
-		if (GetLastError() == ERROR_FILE_NOT_FOUND)
-			return false;
 		return false;
-	}
-	SetSerialParams();
+	if (!SetSerialParams())
+		return false;
+	open = true;
 	return true;
 }
 
-bool SerialPort::SetSerialParams()
+bool MCUConn::OpenPort(unsigned long portIndex)
+{
+	char portName[6];
+	sprintf(portName, "COM%d", portIndex);
+	return this->OpenPort(portName);
+}
+
+bool MCUConn::SetSerialParams()
 {
 	serialParams = DCB{ 0 };
 	if (!GetCommState(hSerial, &serialParams))
@@ -60,33 +46,27 @@ bool SerialPort::SetSerialParams()
 	if (!SetCommTimeouts(hSerial, &commTimeOuts))
 		return false;
 
-	PurgeComm(hSerial, PURGE_RXCLEAR | PURGE_TXCLEAR);
-
-	open = true;
-	return true;
+	return PurgeComm(hSerial, PURGE_RXCLEAR | PURGE_TXCLEAR);
 }
 
-bool SerialPort::Write(unsigned char* data, int length)
+bool MCUConn::WriteData(unsigned char* data, int length)
 {
 	DWORD dwBytesRead = 0;
-	if (!WriteFile(hSerial, data, length, &dwBytesRead, NULL))
-		return false;
-	return true;
+	return WriteFile(hSerial, data, length, &dwBytesRead, NULL);
 }
 
-std::string SerialPort::Read()
+bool MCUConn::Read(unsigned char* buf,int nobtr,DWORD* bytesRead)
 {
-	char szBuff[10] = { 0 };
-	char sz1Buff[10] = { 0 };
-	DWORD dwBytesRead = 0;
-
-	bool ret = ReadFile(hSerial, szBuff, 5, &dwBytesRead, NULL);
-	ReadFile(hSerial, sz1Buff, 5, &dwBytesRead, NULL);
-	return std::string(szBuff);
-
+	return ReadFile(hSerial, buf, nobtr, bytesRead, NULL);
 }
 
-std::vector<unsigned long> SerialPort::FindAvailableComPorts()
+bool MCUConn::SendCoordData(std::vector<cv::Point2f>& points)
+{
+	std::vector<unsigned char> data = CoordParams::ParamDataFromCoordinates(points);
+	return WriteData(data.data(), (int)data.size());
+}
+
+std::vector<unsigned long> MCUConn::FindAvailableComPorts()
 {
 	ULONG portIDs[10];
 	ULONG count;
@@ -95,7 +75,7 @@ std::vector<unsigned long> SerialPort::FindAvailableComPorts()
 	return std::vector<ULONG>();
 }
 
-void SerialPort::Close()
+void MCUConn::Close()
 {
 	CloseHandle(hSerial);
 }
