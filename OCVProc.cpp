@@ -134,6 +134,11 @@ std::vector<cv::Point2f> OCVProc::ProcessImage()
 	if (allQuad.size() < 2)
 		goto end;
 
+
+	cv::drawContours(framePostProc, allQuad, -1, cv::Scalar(0, 255, 0));
+	streamCanvas->ClearBackground();
+	drawMatToDC(framePostProc);
+	
 	removeDoubleQuads(allQuad);
 	outerQuad = removeBiggestQuad(allQuad);
 	for (int i = 0; i < allQuad.size(); i++)
@@ -146,6 +151,7 @@ std::vector<cv::Point2f> OCVProc::ProcessImage()
 
 	cv::warpPerspective(framePostProc, transformedImg, transformationIMG, cv::Size(480, 480));
 	
+
 	cv::perspectiveTransform(QuadCenters, transformedCentersIMG, transformationIMG);
 	cv::perspectiveTransform(QuadCenters, transformedCentersMCU, transformationMCU);
 
@@ -264,13 +270,18 @@ void OCVProc::removeDoubleQuads(std::vector<std::vector<cv::Point>>& quads)
 			double maxSize = std::max(compareQuadSize, currentQuadSize);
 			double minSize = std::min(compareQuadSize, currentQuadSize);
 			double hypothenuse = cv::norm(currentQuadCenter - compareQuadCenter);
-			if ((maxSize / minSize) < 1.4 && hypothenuse < 60)
+			if ((maxSize / minSize) < 2 && hypothenuse < 100)
 			{
 				quads.erase(quads.begin() + j);
 				j--;
 			}
 		}
 	}
+	/*std::vector<double> quadSizes;
+	std::vector<cv::Point> quadCenters;
+	for(int i=0;i<quads.size();i++)
+	{ }*/
+
 }
 
 void OCVProc::setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour)

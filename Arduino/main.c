@@ -1,11 +1,12 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "UART.h"
+#include "lcd.h"
 #include <string.h>
 #include <stdlib.h>
 
 
-char strcmd[9];
+char strcmd[8];
 int points=0;
 //LED PB5
 
@@ -26,7 +27,9 @@ ISR(USART_RX_vect)
 }
 int main(void)
 {
-	DDRD =0b00000100;
+	lcd_init(LCD_DISP_ON);
+	lcd_clrscr();
+	lcd_puts_P("asdas1111dasd");
 	init_usart(9600);
 	SREG|=(1<<7);
 	while(1)
