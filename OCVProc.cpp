@@ -133,11 +133,6 @@ std::vector<cv::Point2f> OCVProc::ProcessImage()
 
 	if (allQuad.size() < 2)
 		goto end;
-
-
-	cv::drawContours(framePostProc, allQuad, -1, cv::Scalar(0, 255, 0));
-	streamCanvas->ClearBackground();
-	drawMatToDC(framePostProc);
 	
 	removeDoubleQuads(allQuad);
 	outerQuad = removeBiggestQuad(allQuad);
