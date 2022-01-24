@@ -2,34 +2,25 @@
 #include <avr/interrupt.h>
 #include "UART.h"
 #include "lcd.h"
+#include "defines.h"
 #include <string.h>
 #include <stdlib.h>
 
-#define FIELD_SX 250 //Field dimensions in cm
-#define FIELD_SY 250
-#define OFFSETX 30	//Vector to the bottom left corner of the field in mm
-#define OFFSETY 60
-#define FMAX 6400	//Stepper motor = 200steps/360°turn. MS resolution is 1/32 => (200steps/turn)*(1turn/s)*32microsteps/step) = 6400microsteps/s
-
-struct target
-{
-	uint8_t x;
-	uint8_t y;
-	uint16_t stepsx;
-	uint16_t stepsy;
-};
-char strcoords[21];
+char strcoords[21]; //21 byte für anzahl der punkte und 2 byte pro punkt mit max. 10 punkte
 uint8_t points=0;
+uint16_t stepscnt=1;
 //LED PB5
-
-ISR(TIMER0_COMPA_vect)
-{
-	
-}
 
 ISR(TIMER1_COMPA_vect)
 {
-	
+	stepscnt++;
+	PORTB^=1<<4;
+	FMAX
+	float freq = stepscnt;
+	uint16_t ocrval = (uint16_t)(15625/freq);
+	OCR1A = ocrval;
+	if(stepscnt==5000)
+		stepscnt=1;
 }
 
 ISR(USART_RX_vect)
@@ -54,8 +45,14 @@ int main(void)
 	lcd_clrscr();
 	lcd_puts_P("asdas1111dasd");
 	init_usart9600();
-	
+	TCCR1A = 0;
+	TCCR1B=0b00001101;
+	DDRB|=1<<4;
+	PORTB|=1<<4;
 	SREG|=(1<<7);
+	TIMSK1|=1<<OCIE1A;
+	OCR1A=15624;
+	TCNT1=0;
 	while(1)
 	{
 

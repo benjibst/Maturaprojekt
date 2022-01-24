@@ -15,13 +15,57 @@
 			<Description></Description>
 			<Files xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
 				<d4p1:anyType i:type="FileInfo">
-					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\xc8\avr\include\avr\iom328p.h</AbsolutePath>
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\include\</AbsolutePath>
+					<Attribute></Attribute>
+					<Category>include</Category>
+					<Condition>C</Condition>
+					<FileContentHash i:nil="true" />
+					<FileVersion></FileVersion>
+					<Name>include/</Name>
+					<SelectString></SelectString>
+					<SourcePath></SourcePath>
+				</d4p1:anyType>
+				<d4p1:anyType i:type="FileInfo">
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\include\avr\iom328p.h</AbsolutePath>
 					<Attribute></Attribute>
 					<Category>header</Category>
-					<Condition>XC</Condition>
+					<Condition>C</Condition>
 					<FileContentHash>4leX2H78R90/kvebBjYSOw==</FileContentHash>
 					<FileVersion></FileVersion>
-					<Name>xc8/avr/include/avr/iom328p.h</Name>
+					<Name>include/avr/iom328p.h</Name>
+					<SelectString></SelectString>
+					<SourcePath></SourcePath>
+				</d4p1:anyType>
+				<d4p1:anyType i:type="FileInfo">
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\templates\main.c</AbsolutePath>
+					<Attribute>template</Attribute>
+					<Category>source</Category>
+					<Condition>C Exe</Condition>
+					<FileContentHash>gJ5ZiF428IItyYS6kO0e9g==</FileContentHash>
+					<FileVersion></FileVersion>
+					<Name>templates/main.c</Name>
+					<SelectString>Main file (.c)</SelectString>
+					<SourcePath></SourcePath>
+				</d4p1:anyType>
+				<d4p1:anyType i:type="FileInfo">
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\templates\main.cpp</AbsolutePath>
+					<Attribute>template</Attribute>
+					<Category>source</Category>
+					<Condition>C Exe</Condition>
+					<FileContentHash>mkKaE95TOoATsuBGv6jmxg==</FileContentHash>
+					<FileVersion></FileVersion>
+					<Name>templates/main.cpp</Name>
+					<SelectString>Main file (.cpp)</SelectString>
+					<SourcePath></SourcePath>
+				</d4p1:anyType>
+				<d4p1:anyType i:type="FileInfo">
+					<AbsolutePath>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\gcc\dev\atmega328p</AbsolutePath>
+					<Attribute></Attribute>
+					<Category>libraryPrefix</Category>
+					<Condition>GCC</Condition>
+					<FileContentHash i:nil="true" />
+					<FileVersion></FileVersion>
+					<Name>gcc/dev/atmega328p</Name>
 					<SelectString></SelectString>
 					<SourcePath></SourcePath>
 				</d4p1:anyType>
