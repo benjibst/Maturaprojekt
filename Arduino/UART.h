@@ -8,7 +8,7 @@ void _puts(char st[],uint8_t len);
 
 char _getch(void);
 
-void _gets(char* st);
+uint8_t _gets(char* st);
 
 void _newline();
 

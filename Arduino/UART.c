@@ -27,12 +27,15 @@ char _getch(void)
     return UDR0;
 }
 
-void _gets(char* st)
+uint8_t _gets(char* st)
 {
+	uint8_t len=0;
     do
     {
+		len++;
         *st=_getch();
     } while (*st++); 
+	return len;
 }
 
 void _newline()
