@@ -1,7 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "UART.h"
-#include "lcd.h"
 #include "defines.h"
 #include "stepper.h"
 #include <util/delay.h>
@@ -16,32 +15,7 @@ uint16_t stepscnt=1;
 float calcocr=700;
 //LED PB5
 
-ISR(TIMER1_COMPA_vect)
-{
-	PORTB^=1<<4;
-	stepscnt++;
-	if(stepscnt<=2000)
-		calcocr = calcocr-(calcocr*2)/((stepscnt*4)+1);
-	if(stepscnt>=10000)
-		calcocr = calcocr-(calcocr*2)/(((12000-stepscnt)*4)+1);
-	if(stepscnt>=12000)
-	{
-		stepscnt=0;
-		calcocr=700;
-	}
-	OCR1A=calcocr;
-	//if(stepscnt<2000)
-		//
-	//if(stepscnt>10000)
-		//calcocr=calcocr-(calcocr*2)/(((12000-stepscnt)*4)+1);
-	//if(stepscnt==12000)
-	//{
-		//stepscnt=0;
-		//calcocr=73;
-	//}
-	//OCR1A=(uint16_t)calcocr;
-	
-}
+
 
 ISR(USART_RX_vect)
 {
@@ -68,21 +42,78 @@ ISR(USART_RX_vect)
 
 int main(void)
 {
-	lcd_init(LCD_DISP_ON);
-	lcd_clrscr();
-	lcd_puts_P("asdas1111dasd");
+	uint16_t steps=0;
+	uint16_t sollsteps=0;
+	uint16_t tcntrev=0;
+	float time =0;
 	init_usart9600();
+	stepperInit(&stepperX);
 	TCCR1A = 0;
 	TCCR1B=0b00001100;
 	DDRB|=1<<4;
-	SREG|=(1<<7);
-	TIMSK1|=1<<OCIE1A;
-	OCR1A=700;
 	TCNT1=0;
-	while(1)
+	while (1)
 	{
-		currenttarget=0;
+		while(steps<2000)
+		{
+			time = TCNT1/15625.0;
+			sollsteps=250*time*time;
+			sollsteps>>=1;
+			if(sollsteps>steps)
+			{
+				steps++;
+				step(&stepperX,0);
+			}
+		}
+		tcntrev=TCNT1;
+		TCNT1=0;
+		sollsteps=0;
+		while(steps>0)
+		{
+			
+			time = (tcntrev-TCNT1)/15625.0;
+			sollsteps=250*time*time;
+			sollsteps>>=1;
+			if(sollsteps<steps)
+			{
+				steps--;
+				step(&stepperX,0);
+			}
+		}
+		steps=0;
+		sollsteps=0;
+		TCNT1=0;
+		while(steps<2000)
+		{
+			time = TCNT1/15625.0;
+			sollsteps=250*time*time;
+			sollsteps>>=1;
+			if(sollsteps>steps)
+			{
+				steps++;
+				step(&stepperX,1);
+			}
+		}
+		tcntrev=TCNT1;
+		TCNT1=0;
+		sollsteps=0;
+		while(steps>0)
+		{
+			
+			time = (tcntrev-TCNT1)/15625.0;
+			sollsteps=250*time*time;
+			sollsteps>>=1;
+			if(sollsteps<steps)
+			{
+				steps--;
+				step(&stepperX,1);
+			}
+		}
+		steps=0;
+		sollsteps=0;
+		TCNT1=0;
 	}
+	
 
 	return 0;
 }

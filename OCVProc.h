@@ -42,8 +42,6 @@ private:
 	double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0);
 	bool isQuad(std::vector<cv::Point> contours);
 	void removeDoubleQuads(std::vector<std::vector<cv::Point>>& quads);
-	void setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour);
-	void setLabelAtPoint(cv::Mat& im, const std::string label, cv::Point point);
 	void drawMatToDC(cv::Mat& mat);
 public:
 	static cv::Point2f quadCenter(std::vector<cv::Point> corners);

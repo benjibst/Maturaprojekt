@@ -252,58 +252,29 @@ void OCVProc::removeDoubleQuads(std::vector<std::vector<cv::Point>>& quads)
 {
 	double currentQuadSize = 0;
 	double compareQuadSize = 0;
+	double maxSize;
+	double minSize;
+	double hypothenuse;
 	cv::Point currentQuadCenter;
 	cv::Point compareQuadCenter;
 	for (int i = 0; i < quads.size(); i++)
 	{
 		currentQuadSize = cv::contourArea(quads[i]);		//information of current quad to find similar quads
-		cv::Point currentQuadCenter = quadCenter(quads[i]);
+		currentQuadCenter = quadCenter(quads[i]);
 		for (int j = i + 1; j < quads.size(); j++)
 		{
 			compareQuadSize = cv::contourArea(quads[j]);	//compare with current quad
 			compareQuadCenter = quadCenter(quads[j]);		//if similar,delete comparequad
-			double maxSize = std::max(compareQuadSize, currentQuadSize);
-			double minSize = std::min(compareQuadSize, currentQuadSize);
-			double hypothenuse = cv::norm(currentQuadCenter - compareQuadCenter);
-			if ((maxSize / minSize) < 2 && hypothenuse < 100)
+			maxSize = std::max(compareQuadSize, currentQuadSize);
+			minSize = std::min(compareQuadSize, currentQuadSize);
+			hypothenuse = cv::norm(currentQuadCenter - compareQuadCenter);
+			if ((maxSize / minSize) < 2 && hypothenuse < 20)
 			{
 				quads.erase(quads.begin() + j);
 				j--;
 			}
 		}
 	}
-	/*std::vector<double> quadSizes;
-	std::vector<cv::Point> quadCenters;
-	for(int i=0;i<quads.size();i++)
-	{ }*/
-
-}
-
-void OCVProc::setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour)
-{
-	int fontface = cv::FONT_HERSHEY_SIMPLEX;
-	double scale = 0.4;
-	int thickness = 1;
-	int baseline = 0;
-
-	cv::Size text = cv::getTextSize(label, fontface, scale, thickness, &baseline);
-	cv::Rect r = cv::boundingRect(contour);
-
-	cv::Point pt(r.x + ((r.width - text.width) / 2), r.y + ((r.height + text.height) / 2));
-	cv::rectangle(im, pt + cv::Point(0, baseline), pt + cv::Point(text.width, -text.height), CV_RGB(255, 255, 255), cv::FILLED);
-	cv::putText(im, label, pt, fontface, scale, CV_RGB(0, 0, 0), thickness, 8);
-}
-
-void OCVProc::setLabelAtPoint(cv::Mat& im, const std::string label, cv::Point point)
-{
-	int fontface = cv::FONT_HERSHEY_SIMPLEX;
-	double scale = 0.8;
-	int thickness = 2;
-	int baseline = 0;
-
-	cv::Size text = cv::getTextSize(label, fontface, scale, thickness, &baseline);
-
-	cv::putText(im, label, point, fontface, scale, CV_RGB(0, 0, 0), thickness, 8);
 }
 
 void OCVProc::drawMatToDC(cv::Mat& mat)
