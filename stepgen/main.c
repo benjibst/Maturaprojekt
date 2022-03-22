@@ -20,6 +20,7 @@ int main()
 
     zeit=2.0*accelsteps/vend;
     accel=(vend*vend)/(2*accelsteps);
+    printf("%f\n",accel);
     timerafter=zeit*freq+1;
 
     int laststeps=0;

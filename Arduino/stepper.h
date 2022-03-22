@@ -1,38 +1,35 @@
-typedef struct
-{
-	uint16_t x;
-	uint16_t y;
-} point;
+#pragma once
+#include <stdint.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
+#include "defines.h"
+#include "UART.h"
 
-typedef struct 
-{
-	uint8_t x;
-	uint8_t y;
-	point pos;
-	uint8_t completed;
-}target;
+#pragma region PinPort
+#define XPort PORTB
+#define YPort PORTD
+#define XDdr DDRB
+#define YDdr DDRD
+#define XStepPin 4
+#define XDirPin  3
+#define YStepPin 4
+#define YDirPin  3
+#pragma endregion PinPort
 
-typedef struct
+enum steptypes
 {
-	volatile uint8_t* Port;
-	volatile uint8_t* Ddr;
-	uint8_t StepPin;
-	uint8_t DirPin;
-	uint8_t EnPin;
-	point pos;
-}stepper;
+	XGO=0b00,
+	YGO=0b01,
+	XCOME=0b10,
+	YCOME=0b11,
+};
+typedef enum steptypes steptypes;
 
-stepper stepperX = {.Port=&PORTB,.Ddr=&DDRB,.StepPin=PORTB4,.DirPin=PORTB3,.EnPin=PORTB2};
-void stepperInit(stepper* s)
-{
-	*(s->Ddr)&=~((1<<s->DirPin)|(1<<s->EnPin)|(1<<s->StepPin));
-}
-void step(stepper* s, uint8_t dir)
-{
-	*(s->Port)&=~1<<(uint8_t)s->DirPin;
-	*(s->Port)|=dir<<(uint8_t)s->DirPin;
-	*(s->Port)^=(1<<(uint8_t)s->StepPin);
-}
+void step(steptypes s);
+void move(steptypes s,uint16_t microsteps);
+point pointfrompos(uint8_t x,uint8_t y);
+
 
 
 

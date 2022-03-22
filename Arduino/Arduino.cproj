@@ -41,6 +41,7 @@
       </ToolNumber>
       <ToolName xmlns="">Custom Programming Tool</ToolName>
     </custom>
+    <CustomProgrammingToolCommand>avrdude -C"C:\Program Files\avrdude\avrdude.conf" -v -patmega328p -carduino -PCOM11 -b115200 -D -Uflash:w:C:\CPP\Maturaprojekt\Arduino\Debug\Arduino.hex:i </CustomProgrammingToolCommand>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -126,6 +127,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="stepper.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="stepper.h">

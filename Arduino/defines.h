@@ -1,5 +1,20 @@
-#define FIELD_SX 250 //Field dimensions in cm
+#pragma  once
+#define FIELD_SX 250 //Field dimensions in mm
 #define FIELD_SY 250
 #define OFFSETX 30	//Vector to the bottom left corner of the field in mm
 #define OFFSETY 60
-#define FMAX 7811	//Stepper motor = 200steps/360°turn. MS resolution is 1/32 => (200steps/turn)*(1turn/s)*32microsteps/step) = 6400microsteps/s
+#define ACCEL 256
+#define MICROSTEPS 8
+#define STEPSTURN 400
+typedef struct
+{
+	uint16_t x;
+	uint16_t y;
+} point;
+
+typedef struct
+{
+	uint8_t x;
+	uint8_t y;
+	point pos;
+}target;
