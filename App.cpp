@@ -28,7 +28,7 @@ bool App::SelectCOMPort(std::vector<unsigned long> ports)
 	}
 	if (SelectString(nullptr, portNames, selectedIndex))
 	{
-		serialPort.OpenPort(ports[selectedIndex]);
+		bool open =serialPort.OpenPort(ports[selectedIndex]);
 		return true;
 	}
 	return false;

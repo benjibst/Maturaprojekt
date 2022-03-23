@@ -7,9 +7,9 @@
 #include "UART.h"
 
 #pragma region PinPort
-#define XPort PORTB
+#define XPort PORTD
 #define YPort PORTD
-#define XDdr DDRB
+#define XDdr DDRD
 #define YDdr DDRD
 #define XStepPin 4
 #define XDirPin  3
