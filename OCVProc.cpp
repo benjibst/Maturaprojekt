@@ -250,27 +250,31 @@ bool OCVProc::isQuad(std::vector<cv::Point> contours)
 
 void OCVProc::removeDoubleQuads(std::vector<std::vector<cv::Point>>& quads)
 {
-	double currentQuadSize = 0;
-	double compareQuadSize = 0;
+	int sz = quads.size();
+	double hypothenuse;
 	double maxSize;
 	double minSize;
-	double hypothenuse;
-	cv::Point currentQuadCenter;
-	cv::Point compareQuadCenter;
-	for (int i = 0; i < quads.size(); i++)
+	struct quadprops
 	{
-		currentQuadSize = cv::contourArea(quads[i]);		//information of current quad to find similar quads
-		currentQuadCenter = quadCenter(quads[i]);
+		double size;
+		cv::Point center;
+	};
+	std::vector<quadprops> quadinfo;
+	for (auto i : quads)
+	{
+		quadinfo.push_back({ cv::contourArea(i),quadCenter(i) });
+	}
+	for (int i=0;i<quads.size()-1;i++)
+	{
 		for (int j = i + 1; j < quads.size(); j++)
 		{
-			compareQuadSize = cv::contourArea(quads[j]);	//compare with current quad
-			compareQuadCenter = quadCenter(quads[j]);		//if similar,delete comparequad
-			maxSize = std::max(compareQuadSize, currentQuadSize);
-			minSize = std::min(compareQuadSize, currentQuadSize);
-			hypothenuse = cv::norm(currentQuadCenter - compareQuadCenter);
-			if ((maxSize / minSize) < 2 && hypothenuse < 20)
+			hypothenuse = cv::norm(quadinfo[i].center - quadinfo[j].center);
+			maxSize = std::max(quadinfo[i].size, quadinfo[j].size);
+			minSize = std::min(quadinfo[i].size, quadinfo[j].size);
+			if (maxSize / minSize < 4 && hypothenuse < 20)
 			{
 				quads.erase(quads.begin() + j);
+				quadinfo.erase(quadinfo.begin() + j);
 				j--;
 			}
 		}
