@@ -10,9 +10,9 @@ private:
 	HANDLE hSerial;
 	DCB serialParams;
 	COMMTIMEOUTS commTimeOuts;
-	bool open = false;
 	bool SetSerialParams();
 public:
+	bool open = false;
 	bool OpenPort(char* portName);
 	bool OpenPort(unsigned long portIndex);
 	bool WriteData(unsigned char* data,int length);

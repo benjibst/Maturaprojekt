@@ -131,11 +131,14 @@ std::vector<cv::Point2f> OCVProc::ProcessImage()
 	framePostProc = afterTransform.clone();
 	allQuad = FindQuadsInMat(afterTransform);
 
-	if (allQuad.size() < 2)
-		goto end;
-	
+
+
 	removeDoubleQuads(allQuad);
+	
 	outerQuad = removeBiggestQuad(allQuad);
+	if (allQuad.size() == 0)
+		goto end;
+
 	for (int i = 0; i < allQuad.size(); i++)
 		QuadCenters.push_back(quadCenter(allQuad[i]));
 
@@ -145,7 +148,7 @@ std::vector<cv::Point2f> OCVProc::ProcessImage()
 	transformationMCU = cv::getPerspectiveTransform(outerQuadf, transformPointsMCU);
 
 	cv::warpPerspective(framePostProc, transformedImg, transformationIMG, cv::Size(480, 480));
-	
+
 
 	cv::perspectiveTransform(QuadCenters, transformedCentersIMG, transformationIMG);
 	cv::perspectiveTransform(QuadCenters, transformedCentersMCU, transformationMCU);
@@ -264,7 +267,7 @@ void OCVProc::removeDoubleQuads(std::vector<std::vector<cv::Point>>& quads)
 	{
 		quadinfo.push_back({ cv::contourArea(i),quadCenter(i) });
 	}
-	for (int i=0;i<quads.size()-1;i++)
+	for (int i = 0; i < quads.size() - 1; i++)
 	{
 		for (int j = i + 1; j < quads.size(); j++)
 		{
