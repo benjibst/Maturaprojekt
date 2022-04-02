@@ -13,7 +13,7 @@ class App : public wxApp
     MainFrame* mainFrame;
     bool SelectCOMPort(std::vector<unsigned long> ports);
     bool SelectCameraDialog();
-    bool SelectString(wxWindow* parent, wxArrayString strings, int& index);
+    int SelectString(wxWindow* parent, wxArrayString strings);
     bool EnterCameraIP(wxWindow* parent, std::string& ip);
 
 public:

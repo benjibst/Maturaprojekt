@@ -22,10 +22,10 @@ private:
 		cv::Point(0,480)
 	};
 	const std::vector<cv::Point2f> transformPointsMCU = {
-		cv::Point(0,0),
-		cv::Point(255,0),
+		cv::Point(0,255),
 		cv::Point(255,255),
-		cv::Point(0,255)
+		cv::Point(255,0),
+		cv::Point(0,0)
 	};
 	HDC drawingDC = 0;
 	wxPanel* streamCanvas = nullptr;
