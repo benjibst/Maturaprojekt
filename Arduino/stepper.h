@@ -8,13 +8,17 @@
 
 #pragma region PinPort
 #define XPort PORTD
-#define YPort PORTD
 #define XDdr DDRD
-#define YDdr DDRD
-#define XStepPin 4
-#define XDirPin  3
-#define YStepPin 4
-#define YDirPin  3
+#define YPort PORTB
+#define YDdr DDRB
+
+#define XDirPin  4
+#define XStepPin 5
+#define XEnPin 6
+
+#define YDirPin  0
+#define YStepPin 1
+#define YEnPin 2
 #pragma endregion PinPort
 
 enum steptypes

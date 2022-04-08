@@ -38,8 +38,8 @@ int main(void)
 {
 	sei();
 	init_usart9600();
-	DDRD|=0b11<<3;
-	DDRB|=1<<PORTB5;
+	DDRD|=0b111<<3;
+	DDRB|=0b111;
 	while (1)
 	{
 		if(pointsreceived)
