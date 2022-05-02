@@ -1,9 +1,6 @@
 #pragma once
 
 #include <Windows.h>
-#include <mfidl.h>
-#include <string>
-#include <mfapi.h>
 #include <vector>
 #include <wx/arrstr.h>
 

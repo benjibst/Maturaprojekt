@@ -2,9 +2,6 @@
 #include "Helpers.h"
 #include "OCVProc.h"
 #include "SerialPort.h"
-#include <algorithm>
-#include <iostream>
-#include <fstream>
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP

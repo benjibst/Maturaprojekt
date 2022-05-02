@@ -1,5 +1,6 @@
 #include "Helpers.h"
-
+#include <mfidl.h>
+#include <mfapi.h>
 wxArrayString Helpers::wxArrStrFromVector(std::vector<wchar_t*> vec)
 {
 	wxArrayString deviceDisplayNames;
