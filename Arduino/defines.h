@@ -6,6 +6,7 @@
 #define ACCEL 256
 #define MICROSTEPS 8
 #define STEPSTURN 400
+#define JOYSTICK_SW 2
 typedef struct
 {
 	uint16_t x;
