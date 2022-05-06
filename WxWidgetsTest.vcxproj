@@ -63,7 +63,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_x64_lib;$(OPENCV_DIR)\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;OneCore.lib;opencv_core454d.lib;opencv_calib3d454d.lib;opencv_imgproc454d.lib;opencv_videoio454d.lib</AdditionalDependencies>
+      <AdditionalDependencies>Mf.lib;Mfplat.lib;mfuuid.lib;OneCore.lib;opencv_core455d.lib;opencv_calib3d455d.lib;opencv_imgproc455d.lib;opencv_videoio455d.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

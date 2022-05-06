@@ -1,6 +1,4 @@
 #include "SerialPort.h"
-#include <vector>
-#include <array>
 
 bool MCUConn::OpenPort(char* portName)
 {
