@@ -2,6 +2,7 @@
 #include "MainFrame.h"
 #include "SerialPort.h"
 #include "OCVProc.h"
+#include <string>
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>

@@ -1,5 +1,6 @@
 #include "App.h"
-
+#include <iostream>
+#include <fstream>
 wxIMPLEMENT_APP(App);
 bool App::OnInit()
 {
