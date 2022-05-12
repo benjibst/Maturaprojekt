@@ -3,7 +3,6 @@
 #include "UART.h"
 #include "defines.h"
 #include "stepper.h"
-#include <util/delay.h>
 
 char strcoords[20]; //21 byte für anzahl der punkte und 2 byte pro punkt mit max. 10 punkte
 target targets[10];
@@ -40,9 +39,10 @@ ISR(USART_RX_vect)
 	pointsreceived=1;
 	SREG = sreg;
 }
-ISR(TIMER0_COMPA_vect)
+ISR(TIMER0_OVF_vect)
 {
 	uint8_t sreg = SREG;
+	
 	int8_t  target_xvel = read_adc(0)-128;
 	int8_t target_yvel = read_adc(1)-128;
 	
@@ -120,7 +120,7 @@ int main(void)
 	
 	mode =1;
 	
-	sei();
+	SREG|=(1<<7);
 	if (mode)
 		goto manual;
 		
@@ -143,17 +143,20 @@ int main(void)
 	#pragma endregion
 	#pragma region ManualMode
 	manual:
-		TCCR0A = 2;
+		init_adc();
+		SREG|=(1<<7);
+		TCCR0A = 0;
 		TCCR0B = 0b101; //prescaler 1/1024
-		OCR0A = 255;
-		TIMSK0 |=1<<OCIE0A;
+		TIMSK0 |=1<<TOIE0;
+		
+		__asm__ volatile("sei");	
 		TCCR1A = 0;
 		TCCR1B = 0b00001101;
 		TIMSK1 |= 1<<OCIE1A;
 		TCCR2A = 2;
 		TCCR2B=0b111;
 		TIMSK2 |=OCIE2A;
-		
+		while(1);
 	#pragma endregion
 }
 void init_adc()
