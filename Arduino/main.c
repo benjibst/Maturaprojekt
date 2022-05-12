@@ -3,6 +3,7 @@
 #include "UART.h"
 #include "defines.h"
 #include "stepper.h"
+#include <stdlib.h>
 
 char strcoords[20]; //21 byte für anzahl der punkte und 2 byte pro punkt mit max. 10 punkte
 target targets[10];
@@ -12,7 +13,8 @@ int8_t man_xvel=0;
 int8_t man_yvel=0;
 steptypes man_dirx;
 steptypes man_diry;
-
+char stringx[7];
+char stringy[7];
 uint8_t mode=0;
 //LED PB5
 
@@ -28,7 +30,7 @@ ISR(USART_RX_vect)
 	for(i=0;i<2*targetcnt;i++)
 		strcoords[i]=_getch();
 	strcoords[i]=0;
-	_puts(strcoords,2*targetcnt);
+	_putslen(strcoords,2*targetcnt);
 	
 	for(i=0;i<targetcnt;i++)
 	{
@@ -42,39 +44,54 @@ ISR(USART_RX_vect)
 ISR(TIMER0_OVF_vect)
 {
 	uint8_t sreg = SREG;
-	
+	cli();
 	int8_t  target_xvel = read_adc(0)-128;
 	int8_t target_yvel = read_adc(1)-128;
 	
+	
+	DDRB|=(1<<5);
+	PORTB|=(1<<5);
 	if(abs(target_xvel)<10)
 		target_xvel=0;
 	if(abs(target_yvel)<10)
 		target_yvel=0;
 			
 	if(target_xvel>man_xvel)
-		man_yvel++;
-	else if(target_xvel<man_xvel)
+		man_xvel++;
+	if(target_xvel<man_xvel)
 		man_xvel--;
 	if(target_yvel>man_yvel)
 		man_yvel++;
-	else if(target_yvel<man_yvel)
+	if(target_yvel<man_yvel)
 		man_yvel--;
 		
+	itoa(man_yvel,stringy,10);
+	itoa(man_xvel,stringx,10);
+	_putch('Y');
+	_puts(stringy);
+	_putch('X');
+	_puts(stringx);
+	_newline();
+	
 	if(man_xvel>0)
 		man_dirx  = XGO;
 	else 
 		man_dirx = XCOME;
 	if(man_yvel>0)
-	man_dirx  = YGO;
+		man_diry  = YGO;
 	else
-		man_dirx = YCOME;
+		man_diry = YCOME;
 		
 	uint16_t target_xfreq = abs(man_xvel)<<4;
 	uint16_t target_yfreq = abs(man_yvel)<<4;
+	
 	uint16_t ocrx_target=(uint16_t)15625.0/target_xfreq;
 	uint16_t ocry_target=(uint16_t)15625.0/target_yfreq;
 	uint8_t ocrx = ocrx_target<=255?ocrx_target:255;
 	uint8_t ocry = ocry_target<=255?ocry_target:255;
+	
+	
+	
 	
 	if(man_xvel==0)
 		TCCR1B&=0b11111000;
@@ -144,6 +161,7 @@ int main(void)
 	#pragma region ManualMode
 	manual:
 		init_adc();
+		init_usart9600();
 		SREG|=(1<<7);
 		TCCR0A = 0;
 		TCCR0B = 0b101; //prescaler 1/1024
@@ -151,7 +169,7 @@ int main(void)
 		
 		__asm__ volatile("sei");	
 		TCCR1A = 0;
-		TCCR1B = 0b00001101;
+		TCCR1B = 0b00001000;
 		TIMSK1 |= 1<<OCIE1A;
 		TCCR2A = 2;
 		TCCR2B=0b111;

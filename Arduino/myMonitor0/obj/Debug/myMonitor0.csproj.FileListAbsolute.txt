@@ -1,0 +1,17 @@
+Z:\joe auf meinem Mac\Dropbox\A_Scora\C#_RS232Kommunikation\myMonitor0\bin\Debug\myMonitor0.exe.config
+Z:\joe auf meinem Mac\Dropbox\A_Scora\C#_RS232Kommunikation\myMonitor0\bin\Debug\myMonitor0.exe
+Z:\joe auf meinem Mac\Dropbox\A_Scora\C#_RS232Kommunikation\myMonitor0\bin\Debug\myMonitor0.pdb
+Z:\joe auf meinem Mac\Dropbox\A_Scora\C#_RS232Kommunikation\myMonitor0\obj\Debug\myMonitor0.csprojResolveAssemblyReference.cache
+Z:\joe auf meinem Mac\Dropbox\A_Scora\C#_RS232Kommunikation\myMonitor0\obj\Debug\myMonitor0.MainForm.resources
+Z:\joe auf meinem Mac\Dropbox\A_Scora\C#_RS232Kommunikation\myMonitor0\obj\Debug\myMonitor0.csproj.GenerateResource.Cache
+Z:\joe auf meinem Mac\Dropbox\A_Scora\C#_RS232Kommunikation\myMonitor0\obj\Debug\myMonitor0.exe
+Z:\joe auf meinem Mac\Dropbox\A_Scora\C#_RS232Kommunikation\myMonitor0\obj\Debug\myMonitor0.pdb
+B:\Programme\myMonitor0\bin\Debug\myMonitor0.exe.config
+B:\Programme\myMonitor0\bin\Debug\myMonitor0.exe
+B:\Programme\myMonitor0\bin\Debug\myMonitor0.pdb
+B:\Programme\myMonitor0\obj\Debug\myMonitor0.csproj.AssemblyReference.cache
+B:\Programme\myMonitor0\obj\Debug\myMonitor0.MainForm.resources
+B:\Programme\myMonitor0\obj\Debug\myMonitor0.csproj.GenerateResource.cache
+B:\Programme\myMonitor0\obj\Debug\myMonitor0.csproj.CoreCompileInputs.cache
+B:\Programme\myMonitor0\obj\Debug\myMonitor0.exe
+B:\Programme\myMonitor0\obj\Debug\myMonitor0.pdb

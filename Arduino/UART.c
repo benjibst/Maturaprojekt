@@ -15,10 +15,17 @@ void _putch(char ch)
     UDR0 = ch;
 }
 
-void _puts(char st[],uint8_t len)
+void _putslen(char st[],uint8_t len)
 {
-    for(int i=0;i<len;i++)
-        _putch(st[i++]);
+	for(int i=0;i<len;i++)
+		_putch(st[i]);
+}
+
+void _puts(char st[])
+{
+	uint8_t i = 0;
+	while (st[i])
+		_putch(st[i++]);
 }
 
 char _getch(void)
