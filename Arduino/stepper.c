@@ -5,7 +5,7 @@ inline void step(steptypes s)
 	XPort&=~(1<<XDirPin);		//set dir pins to 0
 	YPort&=~(1<<YDirPin);
 	XPort|=(s&0b10)<<(XDirPin-1); //if dir bit is set set dir bits in stepper
-	YPort|=(s&0b10)<<(YDirPin-1);
+	YPort|=((s>>1)&0b10)<<(YDirPin);
 	XPort^=((~s)&1)<<XStepPin; //if stepper bit is 0 then do step x 
 	YPort^=(s&1)<<YStepPin;	//if stepper bit is 1 then do step y
 }
