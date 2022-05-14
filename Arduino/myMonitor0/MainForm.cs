@@ -32,7 +32,10 @@ namespace myMonitor0
 		
 		void SerialPort1DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
 		{
-			Debug.WriteLine(serialPort1.ReadExisting());
+			Invoke(new Action(() =>
+			{
+				textBoxIN.AppendText(serialPort1.ReadExisting());
+			}));
 		}
 		
 		void ButtonConnectClick(object sender, EventArgs e)
@@ -68,5 +71,10 @@ namespace myMonitor0
 		{
 			textBoxIN.Text="";	
 		}
-	}
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+			serialPort1.DiscardInBuffer();
+        }
+    }
 }

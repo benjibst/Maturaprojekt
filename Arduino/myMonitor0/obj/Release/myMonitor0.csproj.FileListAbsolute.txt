@@ -1,0 +1,7 @@
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\bin\Release\myMonitor0.exe.config
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\bin\Release\myMonitor0.exe
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Release\myMonitor0.csproj.AssemblyReference.cache
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Release\myMonitor0.MainForm.resources
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Release\myMonitor0.csproj.GenerateResource.cache
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Release\myMonitor0.csproj.CoreCompileInputs.cache
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Release\myMonitor0.exe

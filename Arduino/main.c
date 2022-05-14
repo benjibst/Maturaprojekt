@@ -5,17 +5,19 @@
 #include "stepper.h"
 #include <stdlib.h>
 
+static uint16_t target_xfreq=0;
+static uint16_t target_yfreq=0;
+static int8_t man_xvel=0;
+static int8_t man_yvel=0;
 char strcoords[20]; //21 byte für anzahl der punkte und 2 byte pro punkt mit max. 10 punkte
 target targets[10];
 uint8_t targetcnt=0;
 uint8_t pointsreceived = 0;
-int8_t man_xvel=0;
-int8_t man_yvel=0;
 steptypes man_dirx;
 steptypes man_diry;
 char stringx[7];
 char stringy[7];
-uint8_t mode=0;
+uint8_t mode=1;
 //LED PB5
 
 void init_adc();
@@ -45,9 +47,18 @@ ISR(TIMER0_OVF_vect)
 {
 	uint8_t sreg = SREG;
 	cli();
-	int8_t  target_xvel = read_adc(0)-128;
+	int8_t target_xvel = read_adc(0)-128;
 	int8_t target_yvel = read_adc(1)-128;
 	
+	
+	itoa(target_yvel,stringy,10);
+	itoa(target_xvel,stringx,10);
+	_putch('Y');
+	_puts(stringy);
+	_putch('X');
+	_puts(stringx);
+	_newline();
+	_delay_ms(10);
 	
 	DDRB|=(1<<5);
 	PORTB|=(1<<5);
@@ -55,6 +66,8 @@ ISR(TIMER0_OVF_vect)
 		target_xvel=0;
 	if(abs(target_yvel)<10)
 		target_yvel=0;
+		
+	
 			
 	if(target_xvel>man_xvel)
 		man_xvel++;
@@ -64,14 +77,8 @@ ISR(TIMER0_OVF_vect)
 		man_yvel++;
 	if(target_yvel<man_yvel)
 		man_yvel--;
-		
-	itoa(man_yvel,stringy,10);
-	itoa(man_xvel,stringx,10);
-	_putch('Y');
-	_puts(stringy);
-	_putch('X');
-	_puts(stringx);
-	_newline();
+	
+	
 	
 	if(man_xvel>0)
 		man_dirx  = XGO;
@@ -82,8 +89,10 @@ ISR(TIMER0_OVF_vect)
 	else
 		man_diry = YCOME;
 		
-	uint16_t target_xfreq = abs(man_xvel)<<4;
-	uint16_t target_yfreq = abs(man_yvel)<<4;
+	target_xfreq = abs(man_xvel)<<4;
+	target_yfreq = abs(man_yvel)<<4;
+	
+	
 	
 	uint16_t ocrx_target=(uint16_t)15625.0/target_xfreq;
 	uint16_t ocry_target=(uint16_t)15625.0/target_yfreq;
@@ -115,7 +124,6 @@ ISR(TIMER1_COMPA_vect) //stepper x routine
 	uint8_t sreg = SREG;
 	cli();
 	step(man_dirx);
-	sei();
 	SREG = sreg;
 }
 ISR(TIMER2_COMPA_vect) //stepper y routine
@@ -123,7 +131,6 @@ ISR(TIMER2_COMPA_vect) //stepper y routine
 	uint8_t sreg = SREG;
 	cli();
 	step(man_diry);
-	sei();
 	SREG = sreg;
 }
 
@@ -138,8 +145,6 @@ int main(void)
 	mode =1;
 	
 	SREG|=(1<<7);
-	if (mode)
-		goto manual;
 		
 	#pragma region AutoMode
 	init_usart9600();
@@ -172,7 +177,7 @@ int main(void)
 		TCCR1B = 0b00001000;
 		TIMSK1 |= 1<<OCIE1A;
 		TCCR2A = 2;
-		TCCR2B=0b111;
+		TCCR2B=0;
 		TIMSK2 |=OCIE2A;
 		while(1);
 	#pragma endregion

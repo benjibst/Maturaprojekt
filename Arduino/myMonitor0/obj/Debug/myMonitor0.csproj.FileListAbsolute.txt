@@ -15,3 +15,12 @@ B:\Programme\myMonitor0\obj\Debug\myMonitor0.csproj.GenerateResource.cache
 B:\Programme\myMonitor0\obj\Debug\myMonitor0.csproj.CoreCompileInputs.cache
 B:\Programme\myMonitor0\obj\Debug\myMonitor0.exe
 B:\Programme\myMonitor0\obj\Debug\myMonitor0.pdb
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\bin\Debug\myMonitor0.exe.config
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\bin\Debug\myMonitor0.exe
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\bin\Debug\myMonitor0.pdb
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Debug\myMonitor0.csproj.AssemblyReference.cache
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Debug\myMonitor0.MainForm.resources
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Debug\myMonitor0.csproj.GenerateResource.cache
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Debug\myMonitor0.csproj.CoreCompileInputs.cache
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Debug\myMonitor0.exe
+C:\CPP\Maturaprojekt\Arduino\myMonitor0\obj\Debug\myMonitor0.pdb
