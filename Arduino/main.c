@@ -5,10 +5,7 @@
 #include "stepper.h"
 #include <stdlib.h>
 
-static uint16_t target_xfreq=0;
-static uint16_t target_yfreq=0;
-static int8_t man_xvel=0;
-static int8_t man_yvel=0;
+
 char strcoords[20]; //21 byte für anzahl der punkte und 2 byte pro punkt mit max. 10 punkte
 target targets[10];
 uint8_t targetcnt=0;
@@ -50,18 +47,9 @@ ISR(TIMER0_OVF_vect)
 	int8_t target_xvel = read_adc(0)-128;
 	int8_t target_yvel = read_adc(1)-128;
 	
+	int8_t man_xvel=0;
+	int8_t man_yvel=0;
 	
-	itoa(target_yvel,stringy,10);
-	itoa(target_xvel,stringx,10);
-	_putch('Y');
-	_puts(stringy);
-	_putch('X');
-	_puts(stringx);
-	_newline();
-	_delay_ms(10);
-	
-	DDRB|=(1<<5);
-	PORTB|=(1<<5);
 	if(abs(target_xvel)<10)
 		target_xvel=0;
 	if(abs(target_yvel)<10)
@@ -80,17 +68,18 @@ ISR(TIMER0_OVF_vect)
 	
 	
 	
-	if(man_xvel>0)
+	if(target_xvel>0)
 		man_dirx  = XGO;
 	else 
 		man_dirx = XCOME;
-	if(man_yvel>0)
+	if(target_yvel>0)
 		man_diry  = YGO;
 	else
 		man_diry = YCOME;
 		
-	target_xfreq = abs(man_xvel)<<4;
-	target_yfreq = abs(man_yvel)<<4;
+	uint16_t target_xfreq = abs(target_xvel)<<4;
+	uint16_t target_yfreq = abs(target_yvel)<<4;
+	
 	
 	
 	
@@ -100,23 +89,21 @@ ISR(TIMER0_OVF_vect)
 	uint8_t ocry = ocry_target<=255?ocry_target:255;
 	
 	
-	
-	
-	if(man_xvel==0)
+	if(target_xvel==0)
 		TCCR1B&=0b11111000;
 	else
 	{
 		OCR1A=ocrx;
 		TCCR1B|=0b101;
 	}
-	if(man_yvel==0)
+	TCCR1B|=1<<WGM12;
+	if(target_yvel==0)
 		TCCR2B&=0b11111000;
 	else
 	{
 		OCR2A=ocry;
 		TCCR2B|=0b111;
 	}
-	
 	SREG = sreg;
 }
 ISR(TIMER1_COMPA_vect) //stepper x routine
@@ -124,6 +111,7 @@ ISR(TIMER1_COMPA_vect) //stepper x routine
 	uint8_t sreg = SREG;
 	cli();
 	step(man_dirx);
+	PORTB^=1<<5;
 	SREG = sreg;
 }
 ISR(TIMER2_COMPA_vect) //stepper y routine
@@ -141,8 +129,10 @@ int main(void)
 	
 	DDRD|=0b111<<3;
 	DDRB|=0b111;
-	
+	DDRB |=1<<5;
 	mode =1;
+	if (mode)
+		goto manual;
 	
 	SREG|=(1<<7);
 		
@@ -174,11 +164,11 @@ int main(void)
 		
 		__asm__ volatile("sei");	
 		TCCR1A = 0;
-		TCCR1B = 0b00001000;
-		TIMSK1 |= 1<<OCIE1A;
-		TCCR2A = 2;
+		TCCR1B = (1<<WGM12);
+		TIMSK1 = (1<<OCIE1A);
+		TCCR2A = 1<<WGM21;
 		TCCR2B=0;
-		TIMSK2 |=OCIE2A;
+		TIMSK2 =1<<OCIE2A;
 		while(1);
 	#pragma endregion
 }
