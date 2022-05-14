@@ -9,3 +9,8 @@
 /Arduino/Debug
 /.vs/WxWidgetsTest/v17
 /Arduino/program.bat
+/Arduino/.vs
+/Arduino/myMonitor0/.vs
+/Arduino/myMonitor0/obj/Release
+
+
