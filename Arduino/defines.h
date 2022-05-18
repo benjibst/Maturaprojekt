@@ -7,6 +7,7 @@
 #define MICROSTEPS 8
 #define STEPSTURN 400
 #define JOYSTICK_SW 2
+#define MAGNET_PIN 4
 typedef struct
 {
 	uint16_t x;

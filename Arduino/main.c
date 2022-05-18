@@ -121,9 +121,16 @@ int main(void)
 {
 	DDRC=0;
 	PORTC|=1<<JOYSTICK_SW;
+	DDRD=
+		(1<<XDirPin)|
+		(1<<XStepPin)|
+		(1<<XEnPin);
 	
-	DDRD|=0b111<<3;
-	DDRB|=0b111;
+	DDRB = 
+		(1<<MAGNET_PIN)|
+		(1<<YDirPin)|
+		(1<<YStepPin)|
+		(1<<YEnPin);
 	DDRB |=1<<5;
 	mode =1;
 	if (mode)
@@ -141,8 +148,10 @@ int main(void)
 			{
 				move(XGO,targets[i].pos.x);
 				move(YGO,targets[i].pos.y);
+				PORTB|=(1<<MAGNET_PIN);
 				move(YCOME,targets[i].pos.y);
 				move(XCOME,targets[i].pos.x);
+				PORTB&=~(1<<MAGNET_PIN);
 			}
 			pointsreceived=0;
 		}
@@ -152,6 +161,8 @@ int main(void)
 	manual:
 		init_adc();
 		init_usart9600();
+		uint8_t portc_old=0;
+		uint8_t portc_now=0;
 		SREG|=(1<<7);
 		TCCR0A = 0;
 		TCCR0B = 0b101; //prescaler 1/1024
@@ -164,7 +175,17 @@ int main(void)
 		TCCR2A = 1<<WGM21;
 		TCCR2B=0;
 		TIMSK2 =1<<OCIE2A;
-		while(1);
+		while (1)
+		{
+			portc_now = PINC&(1<<JOYSTICK_SW);
+			if(portc_now&&!portc_old)
+			{
+				PORTB ^= (1<<MAGNET_PIN);
+				_delay_ms(5);
+			}
+			portc_old=portc_now;
+			
+		}
 	#pragma endregion
 }
 void init_adc()
