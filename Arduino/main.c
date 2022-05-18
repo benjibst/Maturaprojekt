@@ -47,26 +47,21 @@ ISR(TIMER0_OVF_vect)
 	int8_t target_xvel = read_adc(0)-128;
 	int8_t target_yvel = read_adc(1)-128;
 	
-	int8_t man_xvel=0;
-	int8_t man_yvel=0;
-	
 	if(abs(target_xvel)<10)
 		target_xvel=0;
 	if(abs(target_yvel)<10)
 		target_yvel=0;
 		
-	
 			
-	if(target_xvel>man_xvel)
-		man_xvel++;
-	if(target_xvel<man_xvel)
-		man_xvel--;
-	if(target_yvel>man_yvel)
-		man_yvel++;
-	if(target_yvel<man_yvel)
-		man_yvel--;
-	
-	
+
+		
+	/*itoa(last_targetxvel,stringx,10);
+	itoa(last_targetyvel,stringy,10);
+	_putch('X');
+	_puts(stringx);
+	_putch('Y');
+	_puts(stringy);
+	_newline();*/
 	
 	if(target_xvel>0)
 		man_dirx  = XGO;
@@ -80,9 +75,6 @@ ISR(TIMER0_OVF_vect)
 	uint16_t target_xfreq = abs(target_xvel)<<4;
 	uint16_t target_yfreq = abs(target_yvel)<<4;
 	
-	
-	
-	
 	uint16_t ocrx_target=(uint16_t)15625.0/target_xfreq;
 	uint16_t ocry_target=(uint16_t)15625.0/target_yfreq;
 	uint8_t ocrx = ocrx_target<=255?ocrx_target:255;
@@ -93,15 +85,19 @@ ISR(TIMER0_OVF_vect)
 		TCCR1B&=0b11111000;
 	else
 	{
-		OCR1A=ocrx;
+		OCR1AL=ocrx;
+		OCR1AH=0;
+		if(TCNT1>ocrx)
+			TCNT1 = ocrx -1;
 		TCCR1B|=0b101;
 	}
-	TCCR1B|=1<<WGM12;
 	if(target_yvel==0)
 		TCCR2B&=0b11111000;
 	else
 	{
 		OCR2A=ocry;
+		if(TCNT2>ocry)
+			TCNT2 = ocry-1;
 		TCCR2B|=0b111;
 	}
 	SREG = sreg;
@@ -111,7 +107,6 @@ ISR(TIMER1_COMPA_vect) //stepper x routine
 	uint8_t sreg = SREG;
 	cli();
 	step(man_dirx);
-	PORTB^=1<<5;
 	SREG = sreg;
 }
 ISR(TIMER2_COMPA_vect) //stepper y routine
