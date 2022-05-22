@@ -154,7 +154,7 @@ std::vector<cv::Point2f> OCVProc::ProcessImage()
 	cv::perspectiveTransform(QuadCenters, transformedCentersMCU, transformationMCU);
 
 	for (int i = 0; i < QuadCenters.size(); i++)
-		cv::circle(transformedImg, transformedCentersIMG[i], 5, cv::Scalar(255, 0, 0), 4);
+		cv::circle(transformedImg, transformedCentersIMG[i], 5, cv::Scalar(0, 0, 255), 4);
 end:
 	streamCanvas->ClearBackground();
 	drawMatToDC(transformedImg);

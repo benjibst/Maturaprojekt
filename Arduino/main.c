@@ -64,8 +64,8 @@ ISR(TIMER0_OVF_vect)
 	float target_xfreq = (pow(2,abs(target_xvel)/28.0f)-1)*300.0f;
 	float target_yfreq = (pow(2,abs(target_yvel)/28.0f)-1)*300.0f;
 	
-	itoa((int)target_xfreq,stringx,10);
-	itoa((int)target_yfreq,stringy,10);
+	itoa(target_xvel,stringx,10);
+	itoa(target_yvel,stringy,10);
 	_putch('X');
 	_puts(stringx);
 	_putch('Y');
@@ -152,7 +152,9 @@ int main(void)
 				move(YCOME,targets[i].pos.y);
 				move(XCOME,targets[i].pos.x);
 				PORTB&=~(1<<MAGNET_PIN);
+				
 			}
+			
 			pointsreceived=0;
 		}
 	}
