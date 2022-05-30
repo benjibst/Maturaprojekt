@@ -2,6 +2,7 @@
 #include "Helpers.h"
 #include "OCVProc.h"
 #include "SerialPort.h"
+#include "CoordParams.h"
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -9,7 +10,7 @@
 #endif
 class MainFrame : public wxFrame
 {
-	MCUConn* serialPort;
+	SerialPort* serialPort;
 	OCVProc* ocvProc;
 	wxSize defaultButtonSize = wxSize(60,30);
 	wxPanel *streamContainer;
@@ -24,6 +25,6 @@ class MainFrame : public wxFrame
 	void btnRotateClicked(wxCommandEvent &event);
 	void btnMirrorClicked(wxCommandEvent &event);
 public:
-	MainFrame(const wxString &title, const wxSize &size,OCVProc* ocvObj,MCUConn* serialObj);
+	MainFrame(const wxString &title, const wxSize &size,OCVProc* ocvObj,SerialPort* serialObj);
 	~MainFrame();
 };

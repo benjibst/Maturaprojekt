@@ -1,6 +1,6 @@
 #include "SerialPort.h"
-
-bool MCUConn::OpenPort(char* portName)
+#include <string>
+bool SerialPort::OpenPort(const char* portName,BR baudRate = BR_9600)
 {
 	hSerial = CreateFileA(portName,
 		GENERIC_READ | GENERIC_WRITE, 0, NULL,
@@ -9,26 +9,27 @@ bool MCUConn::OpenPort(char* portName)
 
 	if (hSerial == INVALID_HANDLE_VALUE)
 		return false;
-	if (!SetSerialParams())
+	if (!SetSerialParams(baudRate))
 		return false;
 	open = true;
 	return true;
 }
 
-bool MCUConn::OpenPort(unsigned long portIndex)
+bool SerialPort::OpenPort(unsigned long portIndex, BR baudRate = BR_9600)
 {
-	char portName[6];
-	sprintf(portName, "COM%d", portIndex);
-	return this->OpenPort(portName);
+	std::string portName;
+	portName.append("COM");
+	portName.append(std::to_string(portIndex));
+	return this->OpenPort(portName.data());
 }
 
-bool MCUConn::SetSerialParams()
+bool SerialPort::SetSerialParams(BR baudRate = BR_9600)
 {
 	serialParams = DCB{ 0 };
 	if (!GetCommState(hSerial, &serialParams))
 		return false;
 
-	serialParams.BaudRate = CBR_9600;
+	serialParams.BaudRate = baudRate;
 	serialParams.ByteSize = 8;
 	serialParams.StopBits = ONESTOPBIT;
 	serialParams.Parity = NOPARITY;
@@ -47,24 +48,18 @@ bool MCUConn::SetSerialParams()
 	return PurgeComm(hSerial, PURGE_RXCLEAR | PURGE_TXCLEAR);
 }
 
-bool MCUConn::WriteData(unsigned char* data, int length)
+bool SerialPort::Write(unsigned char* data, int length)
 {
-	DWORD dwBytesRead = 0;
-	return WriteFile(hSerial, data, length, &dwBytesRead, NULL);
+	DWORD bytesWritten = 0;
+	return WriteFile(hSerial, data, length, &bytesWritten, NULL);
 }
 
-bool MCUConn::Read(unsigned char* buf,int nobtr,DWORD* bytesRead)
+bool SerialPort::Read(unsigned char* buf,int nobtr,DWORD* bytesRead)
 {
 	return ReadFile(hSerial, buf, nobtr, bytesRead, NULL);
 }
 
-bool MCUConn::SendCoordData(std::vector<cv::Point2f>& points)
-{
-	std::vector<unsigned char> data = CoordParams::ParamDataFromCoordinates(points);
-	return WriteData(data.data(), (int)data.size());
-}
-
-std::vector<unsigned long> MCUConn::FindAvailableComPorts()
+std::vector<unsigned long> SerialPort::FindPorts()
 {
 	ULONG portIDs[10];
 	ULONG count;
@@ -73,7 +68,7 @@ std::vector<unsigned long> MCUConn::FindAvailableComPorts()
 	return std::vector<ULONG>();
 }
 
-void MCUConn::Close()
+void SerialPort::Close()
 {
 	CloseHandle(hSerial);
 }

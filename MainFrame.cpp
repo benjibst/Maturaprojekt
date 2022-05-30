@@ -1,5 +1,5 @@
 #include "MainFrame.h"
-MainFrame::MainFrame(const wxString& title, const wxSize& size, OCVProc* ocvObj, MCUConn* serialObj)
+MainFrame::MainFrame(const wxString& title, const wxSize& size, OCVProc* ocvObj, SerialPort* serialObj)
 	: wxFrame(0, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER))
 {
 	serialPort = serialObj;
@@ -13,7 +13,9 @@ void MainFrame::btnCaptureClicked(wxCommandEvent& event)
 	{
 		ocvProc->StopCameraStream();
 		std::vector<cv::Point2f> points = ocvProc->ProcessImage();
-		serialPort->SendCoordData(points);
+		unsigned char data[21];
+		unsigned int bytes = CoordParams::SerialDataFromPoints(points,data,sizeof(data));
+		serialPort->Write(data,bytes);
 		unsigned char str[9];
 		DWORD read;
 		serialPort->Read(str, 9, &read);
