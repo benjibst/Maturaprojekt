@@ -9,7 +9,7 @@
 #endif
 class App : public wxApp
 {
-    MCUConn serialPort;
+    SerialPort serialPort;
     OCVProc ocvProc;
     MainFrame* mainFrame;
     bool SelectCOMPort(std::vector<unsigned long> ports);

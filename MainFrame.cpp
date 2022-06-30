@@ -1,5 +1,5 @@
 #include "MainFrame.h"
-MainFrame::MainFrame(const wxString& title, const wxSize& size, OCVProc* ocvObj, MCUConn* serialObj)
+MainFrame::MainFrame(const wxString& title, const wxSize& size, OCVProc* ocvObj, SerialPort* serialObj)
 	: wxFrame(0, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER))
 {
 	serialPort = serialObj;
