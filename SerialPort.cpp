@@ -1,6 +1,7 @@
 #include "SerialPort.h"
 #include <string>
-bool SerialPort::OpenPort(const char* portName,BR baudRate = BR_9600)
+#include "CoordParams.h"
+bool MCUConn::OpenPort(const char* portName,BR baudRate = BR_9600)
 {
 	hSerial = CreateFileA(portName,
 		GENERIC_READ | GENERIC_WRITE, 0, NULL,
@@ -15,7 +16,7 @@ bool SerialPort::OpenPort(const char* portName,BR baudRate = BR_9600)
 	return true;
 }
 
-bool SerialPort::OpenPort(unsigned long portIndex, BR baudRate = BR_9600)
+bool MCUConn::OpenPort(unsigned long portIndex, BR baudRate = BR_9600)
 {
 	std::string portName;
 	portName.append("COM");
@@ -23,7 +24,7 @@ bool SerialPort::OpenPort(unsigned long portIndex, BR baudRate = BR_9600)
 	return this->OpenPort(portName.data());
 }
 
-bool SerialPort::SetSerialParams(BR baudRate = BR_9600)
+bool MCUConn::SetSerialParams(BR baudRate = BR_9600)
 {
 	serialParams = DCB{ 0 };
 	if (!GetCommState(hSerial, &serialParams))
@@ -48,7 +49,7 @@ bool SerialPort::SetSerialParams(BR baudRate = BR_9600)
 	return PurgeComm(hSerial, PURGE_RXCLEAR | PURGE_TXCLEAR);
 }
 
-bool SerialPort::Write(unsigned char* data, int length)
+bool MCUConn::WriteData(unsigned char* data, int length)
 {
 	DWORD bytesWritten = 0;
 	WriteFile(hSerial, data, length, &bytesWritten, NULL);
@@ -64,8 +65,9 @@ bool MCUConn::Read(unsigned char* buf,int nobtr)
 
 bool MCUConn::SendCoordData(std::vector<cv::Point2f>& points)
 {
-	std::vector<unsigned char> data = CoordParams::ParamDataFromCoordinates(points);
-	return WriteData(data.data(), (int)data.size());
+	unsigned char data[21];
+	long long bytes = CoordParams::SerialDataFromPoints(points,data,21);
+	return WriteData(data, (int)bytes);
 }
 
 void MCUConn::SetManMode()
@@ -89,7 +91,7 @@ std::vector<unsigned long> MCUConn::FindAvailableComPorts()
 	return std::vector<ULONG>();
 }
 
-void SerialPort::Close()
+void MCUConn::Close()
 {
 	CloseHandle(hSerial);
 }

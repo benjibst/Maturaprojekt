@@ -10,7 +10,7 @@
 #endif
 class MainFrame : public wxFrame
 {
-	SerialPort* serialPort;
+	MCUConn* serialPort;
 	OCVProc* ocvProc;
 	wxSize defaultButtonSize = wxSize(60,30);
 	wxPanel *streamContainer;
@@ -27,6 +27,6 @@ class MainFrame : public wxFrame
 	void btnMirrorClicked(wxCommandEvent &event);
 	void autoManChanged(wxCommandEvent& event);
 public:
-	MainFrame(const wxString &title, const wxSize &size,OCVProc* ocvObj,SerialPort* serialObj);
+	MainFrame(const wxString &title, const wxSize &size,OCVProc* ocvObj,MCUConn* serialObj);
 	~MainFrame();
 };

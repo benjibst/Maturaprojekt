@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <vector>
+#include <opencv2/core/types.hpp>
 enum BR
 {
 	BR_110 = CBR_110,
@@ -20,7 +21,7 @@ enum BR
 	BR_256000 = CBR_256000
 };
 
-class SerialPort
+class MCUConn
 {
 private:
 	HANDLE hSerial;
@@ -30,8 +31,8 @@ private:
 public:
 	
 	bool open = false;
-	bool OpenPort(char* portName);
-	bool OpenPort(unsigned long portIndex);
+	bool OpenPort(const char* portName,BR baudRate);
+	bool OpenPort(unsigned long portIndex, BR baudRate);
 	bool WriteData(unsigned char* data,int length);
 	bool Read(unsigned char* buf, int nobtr);
 	bool SendCoordData(std::vector<cv::Point2f>& points);

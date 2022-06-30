@@ -4,7 +4,7 @@
 wxIMPLEMENT_APP(App);
 bool App::OnInit()
 {
-	SelectCOMPort(SerialPort::FindPorts());
+	SelectCOMPort(MCUConn::FindAvailableComPorts());
 
 	if (!SelectCameraDialog())
 		return false;
