@@ -14,9 +14,9 @@ void MainFrame::btnCaptureClicked(wxCommandEvent& event)
 		ocvProc->StopCameraStream();
 		std::vector<cv::Point2f> points = ocvProc->ProcessImage();
 		serialPort->SendCoordData(points);
-		unsigned char str[9];
+		unsigned char str[10];
 		DWORD read;
-		serialPort->Read(str, 9, &read);
+		serialPort->Read(str, 10);
 		btnCapture->SetLabel(wxString("Restart"));
 	}
 	else
@@ -33,6 +33,14 @@ void MainFrame::btnRotateClicked(wxCommandEvent& event)
 void MainFrame::btnMirrorClicked(wxCommandEvent& event)
 {
 	ocvProc->mirrorStream();
+}
+
+void MainFrame::autoManChanged(wxCommandEvent& event)
+{
+	if (choiceManAuto->GetSelection() == 0)
+		serialPort->SetAutoMode();
+	if (choiceManAuto->GetSelection() == 1)
+		serialPort->SetManMode();
 }
 
 void MainFrame::InitUI(wxSize size, wxSize cameraRes)
@@ -55,6 +63,13 @@ void MainFrame::InitUI(wxSize size, wxSize cameraRes)
 	btnMirror = new wxButton(basePanel, wxID_ANY, wxEmptyString,
 		wxPoint(maxXYcameraRes + defaultButtonSize.x + 80, 40 + defaultButtonSize.y), wxSize(defaultButtonSize.y, defaultButtonSize.y));
 	btnMirror->Bind(wxEVT_BUTTON, &MainFrame::btnMirrorClicked, this);
+
+	wxArrayString choices;
+	choices.Add(wxString("Auto"));
+	choices.Add(wxString("Manual"));
+	choiceManAuto = new wxChoice(basePanel, wxID_ANY, wxPoint(maxXYcameraRes + 40, 80 + defaultButtonSize.y), wxDefaultSize,
+		choices);
+	choiceManAuto->Bind(wxEVT_CHOICE, &MainFrame::autoManChanged, this);
 }
 
 MainFrame::~MainFrame()

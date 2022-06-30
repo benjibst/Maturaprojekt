@@ -17,12 +17,14 @@ class MainFrame : public wxFrame
 	wxButton *btnCapture;
 	wxButton *btnRotate;
 	wxButton *btnMirror;
+	wxChoice* choiceManAuto;
 	wxCheckListBox* selectPoints;
 	wxButton* sendPoints;
 	void InitUI(wxSize size,wxSize cameraRes);
 	void btnCaptureClicked(wxCommandEvent &event);
 	void btnRotateClicked(wxCommandEvent &event);
 	void btnMirrorClicked(wxCommandEvent &event);
+	void autoManChanged(wxCommandEvent& event);
 public:
 	MainFrame(const wxString &title, const wxSize &size,OCVProc* ocvObj,MCUConn* serialObj);
 	~MainFrame();

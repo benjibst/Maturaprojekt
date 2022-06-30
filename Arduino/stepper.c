@@ -20,7 +20,6 @@ point pointfrompos(uint8_t x,uint8_t y)
 }
 void move(steptypes s,uint16_t microsteps)
 {
-	cli();
 	TCCR1A = 0;
 	TCCR1B=0b00001100;
 	uint16_t donesteps=0;

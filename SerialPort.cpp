@@ -49,19 +49,34 @@ bool MCUConn::SetSerialParams()
 
 bool MCUConn::WriteData(unsigned char* data, int length)
 {
-	DWORD dwBytesRead = 0;
-	return WriteFile(hSerial, data, length, &dwBytesRead, NULL);
+	DWORD bytesWritten = 0;
+	WriteFile(hSerial, data, length, &bytesWritten, NULL);
+	return bytesWritten == length;
 }
 
-bool MCUConn::Read(unsigned char* buf,int nobtr,DWORD* bytesRead)
+bool MCUConn::Read(unsigned char* buf,int nobtr)
 {
-	return ReadFile(hSerial, buf, nobtr, bytesRead, NULL);
+	DWORD bytesRead;
+	ReadFile(hSerial, buf, nobtr, &bytesRead, NULL);
+	return bytesRead == nobtr;
 }
 
 bool MCUConn::SendCoordData(std::vector<cv::Point2f>& points)
 {
 	std::vector<unsigned char> data = CoordParams::ParamDataFromCoordinates(points);
 	return WriteData(data.data(), (int)data.size());
+}
+
+void MCUConn::SetManMode()
+{
+	unsigned char m[] = { 'm' };
+	this->WriteData(m, 1);
+}
+
+void MCUConn::SetAutoMode()
+{
+	unsigned char a[] = { 'a' };
+	this->WriteData(a, 1);
 }
 
 std::vector<unsigned long> MCUConn::FindAvailableComPorts()
