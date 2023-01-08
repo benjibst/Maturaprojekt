@@ -17,3 +17,9 @@ The image processing is quite the procedure, but the most important steps look l
 <br />
 
 The area that has been found on the image is perspective-transformed into an upright square with side length 256, and the coordinates of the metal objects within this square are sent to a microcontroller. The X and Y coordinates of the objects use 1 byte each, as more precision is unnecessary for a small area like this, and makes data transfer using UART very easy. Upon receiving the coordinates of the objects, the microcontroller (Atmega328p) starts controlling 2 stepper motors to approach each object individually and pick it up using an electromagnet. For this, we build a machine that looks like this: <br />
+<img src="https://github.com/BetterRage/Maturaprojekt/blob/master/Bilder/Bild1.png" width=350>
+
+We made a circuit diagram containing a microcontroller, 2 TMC2226 stepper drivers on custom PCBs that we designed and an electromagnet. Then we designed a PCB for it and ordered it from china: <br /> 
+<img src="https://github.com/BetterRage/Maturaprojekt/blob/master/Bilder/Schaltung.PNG" height=200>
+<img src="https://github.com/BetterRage/Maturaprojekt/blob/master/Bilder/copperbottom.png" height=200>
+<img src="https://github.com/BetterRage/Maturaprojekt/blob/master/Bilder/coppertop.PNG" height=200>
