@@ -28,4 +28,4 @@ We made a circuit diagram containing a microcontroller, 2 TMC2226 stepper driver
 <img src="https://github.com/BetterRage/Maturaprojekt/blob/master/Bilder/coppertop.PNG" height=200>
 
 The assembled PCB inside a 3D printed case, together with 2 power supplies and a PC fan: <br />
-<img src="https://github.com/BetterRage/Maturaprojekt/blob/master/Bilder/edited.jpg" width=350>
+<img src="https://github.com/BetterRage/Maturaprojekt/blob/master/Bilder/edited.jpg" width=350> 
