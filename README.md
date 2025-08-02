@@ -2,7 +2,9 @@
 
 A machine that uses image processing to find magnetic objects and automatically remove them from an area.
 
-<a href="https://github.com/BetterRage/Maturaprojekt/raw/master/Bilder/VID-20220521-WA0005.mp4">A video of the machine operating can be downloaded from here</a>
+
+https://github.com/user-attachments/assets/88520221-f3bb-43c3-997b-82101137d2bb
+
 
 The magnetic objects might look something like this, they are iron washers with a piece of coloured paper attached to them: <br />
 <img src="https://github.com/BetterRage/Maturaprojekt/blob/master/Bilder/IMG-20220521-WA0000.jpg" width=350>
